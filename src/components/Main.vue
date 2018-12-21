@@ -1,0 +1,896 @@
+<template>
+  <div>
+    <div class="animate1 wave">
+      <div class="w1"></div>
+      <div class="w2"></div>
+      <div class="w3"></div>
+      <div class="w4"></div>
+    </div>
+    <img id="apDiv6" src="../assets/img/pencil.png" width="50px" height="50px" alt="发帖" longdesc="#">
+    <div class="background">
+    <div class="container">
+      <div class="header"><a href="#"> <img src="../assets/img/BBS.png"name="Insert_logo" width="125" height="84" id="Insert_logo" style="display:block;" /></a>
+        <!-- end .header --></div>
+      <div class="sidebar1">
+        <ul class="nav">
+          <li v-for="item in category"><a href="#" class="ZiTi">{{item.category_name}}</a></li>
+        </ul>
+      </div>
+      <div class="content">
+        <p><button class="bt1">置顶</button><a href="#" class="TieZiZT">我就想问问，如今养这么多孩子需要多少钱？</a>
+          <input type="submit" name="FaTie" id="FaTie" value="取消">
+        </p>
+        <p><button class="bt1">置顶</button><a href="#" class="TieZiZT">剧情反转？加外长严厉警告特朗普：孟晚舟事件政治化</a>
+          <input type="submit" name="FaTie3" id="FaTie3" value="取消">
+        </p>
+        <p><button class="bt1">置顶</button><a href="#" class="TieZiZT">八一八剧组里那些迷信的讲究</a>
+          <input type="submit" name="FaTie2" id="FaTie2" value="取消">
+        </p>
+        <hr align="center" size="10" >
+        <p><button class="bt2">精</button><a href="#" class="TieZiZT">【广安华蓥】广安的山水、伟人故里及华蓥山的雪</a>
+          <input type="submit" name="FaTie4" id="FaTie4" value="取消">
+        </p>
+        <p><button class="bt2">精</button><a href="#" class="TieZiZT">DG风波过后，门店人头攒动 。国人真不长记性？</a>
+          <input type="submit" name="FaTie5" id="FaTie5" value="取消">
+        </p>
+        <p><button class="bt2">精</button><a href="#" class="TieZiZT">外企辞职，去深山少数民族村落当个女书记</a>
+          <input type="submit" name="FaTie6" id="FaTie6" value="取消">
+        </p>
+        <p style="text-align:right;"><input type="submit" name="FaTie7" id="FaTie7" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input type="submit" name="FaTie10" id="FaTie10" value="下一页">
+        </p>
+
+        <hr size="10">
+        <p><button class="bt3">赏</button><a href="#" class="TieZiZT">汽车所有权归谁？</a></p>
+        <p><button class="bt3">赏</button><a href="#" class="TieZiZT">股市之路重新起航，300W实践记录盈亏！</a></p>
+        <p><button class="bt3">赏</button><a href="#" class="TieZiZT">大陆人为你为什么要看台湾政论节目？</a></p>
+        <p style="text-align:right;"><input type="submit" name="FaTie8" id="FaTie8" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input type="submit" name="FaTie11" id="FaTie12" value="下一页">
+        </p>
+        <hr size="10">
+        <p><a href="#" class="TieZiZT">记录我开奶茶店的每一天，包括真实日常流水</a></p>
+        <p><a href="#" class="TieZiZT">结婚给全公司发请帖，去还是不去？</a></p>
+        <p><a href="#" class="TieZiZT">海口交警大力查处电动车酒驾行为值得商榷</a></p>
+        <p style="text-align:right;"><input type="submit" name="FaTie9" id="FaTie9" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input type="submit" name="FaTie11" id="FaTie11" value="下一页">
+        </p>
+        <!-- end .content -->
+      </div>
+      <div class="sidebar2">
+        <div v-if="isLogin">
+          <a href="#"><img src="../assets/img/head.png"name="User_logo" width="60" height="60" id="User_logo" style="margin:auto; display:block;" /></a>
+          <a href="#" style="font-size: 13px"> 个人空间>></a>
+        </div>
+        <div @click="tologin()" class="login" v-if="!isLogin">
+          没登录，去登录>>
+        </div>
+        <!-- end .sidebar2 -->
+      </div>
+      <div class="footer">
+      </div>
+    </div>
+    </div>
+    <div class="ad">
+      <div class="ad_title">广告位招租</div>
+      <banner :listImg="bannerList"></banner>
+    </div>
+    <div v-if="showModal" id="modal">
+    </div>
+      <div v-if="isLoginT" id="login" class="login1 animated bounceInDown">
+        <img class="close1" src="../assets/img/close.png" @click="close()">
+        <div style="clear: both;"></div>
+        <div class="title">登录</div>
+        <div class="input_div">
+          <img src="../assets/img/user.png">
+          <input placeholder="账户" id="user" v-model="accountLogin"/>
+        </div>
+        <div class="input_div">
+          <img src="../assets/img/password.png">
+          <input placeholder="密码" id="password" v-model="passwordLogin"/>
+        </div>
+        <button class="submit" @click="login()">登录</button>
+        <div class="register" @click="toregister()">没账号，现在去注册</div>
+      </div>
+    <div v-if="isRegister" class="animated bounceInUp" id="register">
+      <img class="close1" src="../assets/img/close.png" @click="close()">
+      <div style="clear: both;"></div>
+      <div class="title">注册</div>
+      <div class="input_div">
+        <img src="../assets/img/user.png">
+        <input placeholder="账户" id="user1" v-model="account"/>
+      </div>
+      <div class="input_div">
+        <img src="../assets/img/password.png">
+        <input placeholder="密码" id="password1" type="password" v-model="password"/>
+      </div>
+      <div class="input_div">
+        <img src="../assets/img/password.png">
+        <input placeholder="确认密码" id="password2" type="password" v-model="passwordAgain"/>
+      </div>
+      <div class="input_div">
+        <img src="../assets/img/true.png">
+        <input placeholder="用户名" id="true_name" v-model="username"/>
+      </div>
+      <div class="input_div">
+        <img src="../assets/img/phone.png">
+        <input placeholder="手机号" id="phone" v-model="tel"/>
+      </div>
+      <div class="input_div">
+        <img src="../assets/img/age.png">
+        <input type="date" placeholder="出生日期" id="age" value="2018-07-22" v-model="age"/>
+      </div>
+      <div class="input_div">
+        <img src="../assets/img/sex.png">
+        <input placeholder="性别" id="sex" v-model="sex"/>
+      </div>
+      <div class="input_div">
+        <img src="../assets/img/work.png">
+        <input placeholder="工作性质" id="work" v-model="occupation"/>
+      </div>
+      <div class="input_div">
+        <img src="../assets/img/workplace.png">
+        <input placeholder="工作地点" id="workplace" v-model="place"/>
+      </div>
+      <button @click="register()" class="submit">注册</button>
+    </div>
+    <alert v-if="isAlert" :message="message" class="animated bounceInDown aletr"></alert>
+  </div>
+</template>
+
+<script>
+  import Banner from './Banner'
+  import Swiper from './Swiper'
+  import Alert from './Alert'
+export default {
+  name: 'Main',
+  data () {
+    return {
+      isLogin: false,
+      showModal: false,
+      isLoginT: false,
+      isRegister: false,
+      isAlert: false,
+      bannerList: [
+        {"type":"1","img":"../../static/img/1.jpg","url":""},
+        {"type":"1","img":"../../static/img/1.jpg","url":""},
+        {"type":"1","img":"../../static/img/1.jpg","url":""},
+        {"type":"1","img":"../../static/img/1.jpg","url":""}
+      ],
+      account: '',
+      username: '',
+      password: '',
+      age: '',
+      occupation: '',
+      place: '',
+      sex: '',
+      tel: '',
+      passwordAgain: '',
+      baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
+      baseUrl1: "http://119.29.150.121:8080/BBS",
+      accountLogin: '',
+      passwordLogin: '',
+      category: [],
+      message: ''
+    }
+  },
+  methods: {
+    getCategory() {
+      this.axios.get(this.baseUrl1 + "/api/getCategory")
+        .then(res => {
+          if (res.data.status == '1') {
+            this.category = res.data.data.categories
+          }
+          else {
+            alert("信息请求失败")
+          }
+        })
+    },
+    tologin() {
+      this.showModal = true
+      this.isLoginT = true
+    },
+    toregister() {
+      this.isLoginT = false
+      this.isRegister = true
+
+    },
+    close() {
+      this.showModal = false
+      this.isLoginT = false
+      this.isRegister = false
+    },
+    register() {
+      if(this.username == '' || this.account == '' || this.password == '' || this.age == '' || this.occupation == '' || this.place == '' || this.sex == '' || this.tel == '' || this.passwordAgain == '') {
+        console.log(this.age)
+        alert("请完成所有信息")
+      }
+      else {
+        if(this.sex == '男' || this.sex == '女') {
+          if(this.password === this.passwordAgain) {
+            let data = {
+              account: this.account,
+              username: this.username,
+              password: this.password,
+              age: this.age,
+              occupation: this.occupation,
+              place: this.place,
+              sex: this.sex,
+              tel: this.tel
+            }
+            this.axios.post(this.baseUrl + "/api/register",data)
+              .then(res => {
+              })
+          }
+          else {
+            alert("输入密码不一致")
+          }
+        }
+        else {
+          alert("性别类型不对")
+        }
+      }
+    },
+    login() {
+      if(this.accountLogin == '' || this.passwordLogin == '') {
+        this.message = "字段不能为空"
+        this.isAlert = true
+        let _this = this
+        setTimeout(function () {
+          _this.isAlert = false
+        },1500)
+      }
+      else {
+        let data = {
+          account: this.accountLogin,
+          password: this.passwordLogin
+        }
+        this.axios.post(this.baseUrl + "/api/login",data)
+          .then(res => {
+            if(res.data.status != '0') {
+              this.isAlert = true
+            }
+            else {
+              this.isLogin = true
+              this.isLoginT = false
+              this.showModal = false
+            }
+          })
+      }
+    }
+  },
+  components: {
+    Banner,
+    Swiper,
+    Alert,
+  },
+  created() {
+    this.getCategory()
+  }
+}
+</script>
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+  input[type=date]::-webkit-inner-spin-button{visibility: hidden;}
+  html{
+    font-size: 20px;
+  }
+  @-webkit-keyframes opac{
+    from {
+      opacity: 1;
+      width:0;
+      height:0;
+      top:50%;
+      left:50%;
+    }
+    to {
+      opacity : 0;
+      width:100%;
+      height:100%;
+      top:0;
+      left:0;
+    }
+  }
+  .animate1 {
+    /*z-index: -1;*/
+    position: fixed;
+    left: 0;
+    top: 0;
+  }
+  .animate1 .w2{
+    -webkit-animation-delay:1s;
+  }
+  .animate1 .w3{
+    -webkit-animation-delay:2s;
+  }
+  .animate1 .w4{
+    -webkit-animation-delay:3s;
+  }
+  .wave{
+    width: 500px;
+    height: 500px;
+    position: absolute;
+    top: 10px;
+    left: 20px;
+  }
+  .wave *{
+    border:1px solid #fff;
+    position:absolute;
+    border-radius:50%;
+    -webkit-animation:opac 4s infinite;
+  }
+  .ad {
+    position: fixed;
+    right: 25%;
+    margin-right: -350px;
+    top: 50px;
+    width: 300px;
+    height: 600px;
+  }
+  .ad_title {
+    width: 100%;
+    height: 20px;
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  ul, ol, dl {
+    padding: 0;
+    margin: 0;
+  }
+  hr{
+    background-color:rgba(63,137,236,0.1);
+    margin-left: 10px;
+    margin-right: 10px;
+    border: none;
+  }
+  h1, h2, h3, h4, h5, h6, p {
+    margin-top: 0;
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+  a img {
+    border: none;
+  }
+
+  a:link {
+
+    color:#414958;
+    text-decoration: underline;
+  }
+  a:visited {
+    color: #4E5869;
+    text-decoration: underline;
+  }
+  a:hover, a:active, a:focus {
+    text-decoration: none;
+  }
+  .background {
+    width: 100%;
+    height: 100%;
+    background-color: #444;
+    margin-top: -20px;
+  }
+  .container {
+    width: 50%;
+    height: 100%;
+    max-width: 1260px;
+    min-width: 780px;
+    background-color: #FFF;
+    margin: 0 auto;
+  }
+
+  .header {
+    background-color: rgba(63,137,236,0.1);
+
+  }
+
+  .sidebar1 {
+    float: left;
+    width: 20%;
+    background-color: white;
+    padding-bottom: 10px;
+  }
+  .content {
+    padding: 10px 0;
+    width: 60%;
+    float: left;
+  }
+  .sidebar2 {
+    float: left;
+    width: 20%;
+    background-color: white;
+    padding: 10px 0;
+    text-align: center;
+  }
+
+  .content ul, .content ol {
+    padding: 0 15px 15px 40px;
+  }
+
+  ul.nav {
+    list-style: none;
+    border-top: 2px solid rgba(63,137,236,0.3);
+    margin-bottom: 15px;
+  }
+  ul.nav li {
+    border-bottom: 1px solid rgba(63,137,236,0.3);
+    text-align: center;
+  }
+  ul.nav a, ul.nav a:visited {
+    padding: 5px 5px 5px 15px;
+    display: block;
+    text-decoration: none;
+    background-color: rgba(63,137,236,0.3);
+    color: #000;
+  }
+  ul.nav a:hover, ul.nav a:active, ul.nav a:focus {
+    background-color: rgba(63,137,236,0.4);
+  }
+
+  .footer {
+    padding: 10px 0;
+    background-color: rgba(63,137,236,0.1);
+    position: relative;
+    clear: both;
+  }
+
+  #apDiv6 {
+    position: fixed;
+    right: 25%;
+    bottom: 30px;
+  }
+  .ZiTi {
+    font-size: 15px;
+    font-family: 等线;
+
+  }
+  .TieZiZT {
+    font-size: 13px;
+  }
+  input{
+    width: 40px;
+    line-height: 16px;
+    font-size: 10px;
+    border: none;
+    color: #fff;
+    background-color: rgba(63,137,236,0.4);
+    cursor: pointer;
+    margin: 10px;
+  }
+  .bt1{
+    margin-right: 10px;
+    outline: none;
+    border: none;
+    border: 1px solid #dee0de;
+    background: linear-gradient(to top, #f5f5f5,lightsteelblue );
+    min-width: 20px;
+    border-radius: 2px;
+    padding: 0 5px;
+    color: #333;
+    font-size: 10px;
+
+  }
+  .bt2{
+    margin-right: 10px;
+    outline: none;
+    border: none;
+    border: 1px solid #dee0de;
+    background: linear-gradient(to top,pink,red);
+    min-width: 20px;
+    border-radius: 2px;
+    padding: 0 5px;
+    color: #333;
+    font-size: 10px;
+
+  }
+  .bt3{
+    margin-right: 10px;
+    outline: none;
+    border: none;
+    border: 1px solid #dee0de;
+    background: linear-gradient(to top, #fefefe, gold);
+    min-width: 20px;
+    border-radius: 2px;
+    padding: 0 5px;
+    color: #333;
+    font-size: 10px;
+
+  }
+  .content { margin-right: -1px; }
+  ul.nav a { zoom: 1; }
+  .login {
+    text-decoration: underline;
+    color: rgb(63,137,236);
+    font-size: 14px;
+    cursor: pointer;
+  }
+  #login {
+    position: fixed;
+    left: 50%;
+    margin-left: -200px;
+    top: 10px;
+    text-align: center;
+    transition: all 0.7s ease-in-out;
+    z-index: 2;
+  }
+  #modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: rgba(0,0,0,0.3);
+    width: 100%;
+    height: 100%;
+  }
+  .login1 {
+    width: 400px;
+    height: 420px;
+    margin: 0 auto;
+    background-color: #fff;
+    box-shadow: rgba(0,0,0,0.4) 0px 10px 20px;
+    border: rgba(63,137,236,0.7) 5px solid;
+  }
+  .close1 {
+    width: 25px;
+    height: 25px;
+    float: right;
+    margin-top: 20px;
+    margin-right: 20px;
+    cursor: pointer;
+    opacity: 0.7;
+  }
+  .close1:hover {
+    opacity: 1;
+  }
+  .title {
+    width: 100%;
+    line-height: 50px;
+    font-size: 25px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    color: rgb(63,137,236);
+  }
+  .input_div {
+    width: 300px;
+    height: 40px;
+    margin: 0 auto;
+    margin-bottom: 20px;
+    position: relative;
+    border: 1px rgb(63,137,236) solid;
+  }
+  .input_div img {
+    width: 26px;
+    height: 26px;
+    position: absolute;
+    top: 50%;
+    margin-top: -13px;
+    left: 10px;
+  }
+  #user,
+  #password{
+    display: inline-block;
+    width: 250px;
+    height: 40px;
+    outline: none;
+    border: none;
+    position: absolute;
+    left: 50px;
+    background-color: transparent;
+    margin: 0;
+    color: #000;
+  }
+  .register {
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    text-decoration: underline;
+    color: rgb(63,137,236);
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  #register {
+    width: 400px;
+    height: 700px;
+    background-color: #fff;
+    box-shadow: rgba(0,0,0,0.4) 0px 10px 20px;
+    border: rgba(63,137,236,0.7) 5px solid;
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    margin-left: -200px;
+  }
+  .title {
+    width: 100%;
+    line-height: 30px;
+    font-size: 25px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    color: rgb(63,137,236);
+  }
+  .input_div {
+    width: 300px;
+    height: 40px;
+    margin: 0 auto;
+    margin-bottom: 15px;
+    position: relative;
+    border: 1px rgb(63,137,236) solid;
+  }
+  .input_div img {
+    width: 26px;
+    height: 26px;
+    position: absolute;
+    top: 50%;
+    margin-top: -13px;
+    left: 10px;
+  }
+  #user1,#phone,#work,#workplace,#sex,#age,#true_name,
+  #password1,
+  #password2{
+    display: inline-block;
+    width: 250px;
+    height: 40px;
+    outline: none;
+    border: none;
+    position: absolute;
+    left: 50px;
+    background-color: transparent;
+    margin: 0;
+    color: #000;
+  }
+  .submit {
+    display: block;
+    box-sizing: border-box;
+    width: 304px;
+    line-height: 40px;
+    font-size: 16px;
+    color: rgb(255,255,255);
+    background-color: rgba(63,137,236,0.7);
+    margin: 0 auto;
+    border: none;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+    border: 2px rgb(63,137,236) solid;
+    color: rgb(63,137,236);
+    background-color: rgb(255,255,255);
+  }
+  .submit:hover {
+    color: rgb(255,255,255);
+    background-color: rgba(63,137,236,1);
+  }
+  @-webkit-keyframes bounceInDown {
+    from,
+    60%,
+    75%,
+    90%,
+    to {
+      -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    0% {
+      opacity: 0;
+      -webkit-transform: translate3d(0, -3000px, 0);
+      transform: translate3d(0, -3000px, 0);
+    }
+
+    60% {
+      opacity: 0.5;
+      -webkit-transform: translate3d(0, 25px, 0);
+      transform: translate3d(0, 25px, 0);
+    }
+
+    75% {
+      -webkit-transform: translate3d(0, -10px, 0);
+      transform: translate3d(0, -10px, 0);
+    }
+
+    90% {
+      opacity: 1;
+      -webkit-transform: translate3d(0, 5px, 0);
+      transform: translate3d(0, 5px, 0);
+    }
+
+    to {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes bounceInDown {
+    from,
+    60%,
+    75%,
+    90%,
+    to {
+      -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    0% {
+      opacity: 0;
+      -webkit-transform: translate3d(0, -3000px, 0);
+      transform: translate3d(0, -3000px, 0);
+    }
+
+    60% {
+      opacity: 0.5;
+      -webkit-transform: translate3d(0, 25px, 0);
+      transform: translate3d(0, 25px, 0);
+    }
+
+    75% {
+      -webkit-transform: translate3d(0, -10px, 0);
+      transform: translate3d(0, -10px, 0);
+    }
+
+    90% {
+      opacity: 1;
+      -webkit-transform: translate3d(0, 5px, 0);
+      transform: translate3d(0, 5px, 0);
+    }
+
+    to {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .bounceInDown {
+    -webkit-animation-name: bounceInDown;
+    animation-name: bounceInDown;
+  }
+  @-webkit-keyframes bounceInUp {
+    from,
+    60%,
+    75%,
+    90%,
+    to {
+      -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    from {
+      opacity: 0;
+      -webkit-transform: translate3d(0, 3000px, 0);
+      transform: translate3d(0, 3000px, 0);
+    }
+
+    60% {
+      opacity: 0.5;
+      -webkit-transform: translate3d(0, -20px, 0);
+      transform: translate3d(0, -20px, 0);
+    }
+
+    75% {
+      -webkit-transform: translate3d(0, 10px, 0);
+      transform: translate3d(0, 10px, 0);
+    }
+
+    90% {
+      opacity: 1;
+      -webkit-transform: translate3d(0, -5px, 0);
+      transform: translate3d(0, -5px, 0);
+    }
+
+    to {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes bounceInUp {
+    from,
+    60%,
+    75%,
+    90%,
+    to {
+      -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    from {
+      opacity: 0;
+      -webkit-transform: translate3d(0, 3000px, 0);
+      transform: translate3d(0, 3000px, 0);
+    }
+
+    60% {
+      opacity: 0.5;
+      -webkit-transform: translate3d(0, -20px, 0);
+      transform: translate3d(0, -20px, 0);
+    }
+
+    75% {
+      -webkit-transform: translate3d(0, 10px, 0);
+      transform: translate3d(0, 10px, 0);
+    }
+
+    90% {
+      opacity: 1;
+      -webkit-transform: translate3d(0, -5px, 0);
+      transform: translate3d(0, -5px, 0);
+    }
+
+    to {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .bounceInUp {
+    -webkit-animation-name: bounceInUp;
+    animation-name: bounceInUp;
+  }
+
+  .animated {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+  }
+
+  .animated.infinite {
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+  }
+
+  .animated.delay-1s {
+    -webkit-animation-delay: 1s;
+    animation-delay: 1s;
+  }
+
+  .animated.delay-2s {
+    -webkit-animation-delay: 2s;
+    animation-delay: 2s;
+  }
+
+  .animated.delay-3s {
+    -webkit-animation-delay: 3s;
+    animation-delay: 3s;
+  }
+
+  .animated.delay-4s {
+    -webkit-animation-delay: 4s;
+    animation-delay: 4s;
+  }
+
+  .animated.delay-5s {
+    -webkit-animation-delay: 5s;
+    animation-delay: 5s;
+  }
+
+  .animated.fast {
+    -webkit-animation-duration: 800ms;
+    animation-duration: 800ms;
+  }
+
+  .animated.faster {
+    -webkit-animation-duration: 500ms;
+    animation-duration: 500ms;
+  }
+
+  .animated.slow {
+    -webkit-animation-duration: 2s;
+    animation-duration: 2s;
+  }
+
+  .animated.slower {
+    -webkit-animation-duration: 3s;
+    animation-duration: 3s;
+  }
+  .aletr {
+    width: 200px;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    margin-left: -100px;
+    z-index: 10;
+  }
+  /*@media (prefers-reduced-motion) {*/
+    /*.animated {*/
+      /*-webkit-animation: unset !important;*/
+      /*animation: unset !important;*/
+      /*-webkit-transition: none !important;*/
+      /*transition: none !important;*/
+    /*}*/
+  /*}*/
+</style>

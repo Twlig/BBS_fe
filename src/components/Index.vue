@@ -88,7 +88,6 @@
   </div>
 </template>
 <script>
-  import ba from '../../static/ba.js'
 </script>
 <style scoped>
   .container {

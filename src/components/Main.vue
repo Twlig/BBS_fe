@@ -6,7 +6,7 @@
       <div class="w3"></div>
       <div class="w4"></div>
     </div>
-    <img id="apDiv6" src="../assets/img/pencil.png" width="50px" height="50px" alt="发帖" longdesc="#">
+    <img id="apDiv6" src="../assets/img/pencil.png" width="50px" height="50px" alt="发帖" longdesc="#" @click="toPostTopic()">
     <div class="background">
     <div class="container">
       <div class="header"><a href="#"> <img src="../assets/img/BBS.png"name="Insert_logo" width="125" height="84" id="Insert_logo" style="display:block;" /></a>
@@ -36,20 +36,22 @@
         <p><button class="bt2">精</button><a href="#" class="TieZiZT">外企辞职，去深山少数民族村落当个女书记</a>
           <input type="submit" name="FaTie6" id="FaTie6" value="取消">
         </p>
-        <p style="text-align:right;"><input type="submit" name="FaTie7" id="FaTie7" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input type="submit" name="FaTie10" id="FaTie10" value="下一页">
+        <p style="text-align:left;"><input type="submit" name="FaTie7" id="FaTie7" value="上一页">
+          <span v-for="(index) in usualTieGroup1">
+            <span v-if="usualTieGroup1 > 8"><a :class="[nowIndex == index ? 'curent' : '']" v-if="index < 5 || index > (usualTieGroup1 - 4)" href="#">{{index}}&nbsp;</a><a v-if="index === usualTieGroup1 - 5">...</a></span>
+            <a href="#" v-if="usualTieGroup1 <= 8">{{index}}&nbsp;</a>
+          </span>
+          <span style="font-size: 13px">跳转到</span><input type="text" style="width: 20px; height: 20px;background-color: #fff;color: #333;text-align: center;border: 1px rgb(63,137,236) solid;" @keyup.enter="toUsualIndex(index)"/>
+          <input type="submit" name="FaTie10" id="FaTie10" value="下一页">
         </p>
 
         <hr size="10">
-        <p><button class="bt3">赏</button><a href="#" class="TieZiZT">汽车所有权归谁？</a></p>
-        <p><button class="bt3">赏</button><a href="#" class="TieZiZT">股市之路重新起航，300W实践记录盈亏！</a></p>
-        <p><button class="bt3">赏</button><a href="#" class="TieZiZT">大陆人为你为什么要看台湾政论节目？</a></p>
-        <p style="text-align:right;"><input type="submit" name="FaTie8" id="FaTie8" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input type="submit" name="FaTie11" id="FaTie12" value="下一页">
+        <p v-for="item in scoreTie"><button class="bt3">赏</button><a href="#" class="TieZiZT">{{item.post_title}}</a></p>
+        <p style="text-align:left;"><input type="submit" name="FaTie8" id="FaTie8" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input type="submit" name="FaTie11" id="FaTie12" value="下一页">
         </p>
         <hr size="10">
-        <p><a href="#" class="TieZiZT">记录我开奶茶店的每一天，包括真实日常流水</a></p>
-        <p><a href="#" class="TieZiZT">结婚给全公司发请帖，去还是不去？</a></p>
-        <p><a href="#" class="TieZiZT">海口交警大力查处电动车酒驾行为值得商榷</a></p>
-        <p style="text-align:right;"><input type="submit" name="FaTie9" id="FaTie9" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input type="submit" name="FaTie11" id="FaTie11" value="下一页">
+        <p v-for="item in nowusualTie"><button class="bt1">话题</button><a href="#" class="TieZiZT">{{item.post_title}}</a></p>
+        <p style="text-align:left;"><input @click="usualPre()" type="submit" name="FaTie9" id="FaTie9" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input @click="usualNext()" type="submit" name="FaTie11" id="FaTie11" value="下一页">
         </p>
         <!-- end .content -->
       </div>
@@ -164,10 +166,19 @@ export default {
       passwordAgain: '',
       baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
       baseUrl1: "http://119.29.150.121:8080/BBS",
+      baseUrl2: "http://120.79.211.126:8080/test/",
       accountLogin: '',
       passwordLogin: '',
       category: [],
-      message: ''
+      message: '',
+      scoreTie: [],
+      usualTie: [],
+      nowusualTie: [],
+      usualTieLength: 0,
+      usualTieStart: 0,
+      usualTieEnd: 3,
+      usualTieGroup1: 9,
+      nowIndex: 1
     }
   },
   methods: {
@@ -179,6 +190,17 @@ export default {
           }
           else {
             alert("信息请求失败")
+          }
+        })
+    },
+    getScore() {
+      this.axios.get(this.baseUrl + "/api/getScoreTie")
+        .then(res => {
+          if(res.data.status == '0') {
+            this.scoreTie = res.data.data
+          }
+          else {
+            alert("请求失败")
           }
         })
     },
@@ -198,7 +220,6 @@ export default {
     },
     register() {
       if(this.username == '' || this.account == '' || this.password == '' || this.age == '' || this.occupation == '' || this.place == '' || this.sex == '' || this.tel == '' || this.passwordAgain == '') {
-        console.log(this.age)
         alert("请完成所有信息")
       }
       else {
@@ -253,6 +274,44 @@ export default {
             }
           })
       }
+    },
+    toPostTopic() {
+      this.$router.push('/postTopic')
+    },
+    toGetUsualTie() {
+      this.axios.get(this.baseUrl2 + "/getPost")
+        .then(res => {
+          this.usualTie = res.data.data.posts
+          this.usualTieLength = this.usualTie.length
+          this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
+          if(this.usualTieLength % 3 === 0) {
+            this.usualTieGroup = parseInt(this.usualTieLength / 3)
+          }
+          else {
+            this.usualTieGroup = parseInt(this.usualTieLength / 3) + 1
+          }
+        })
+    },
+    usualPre() {
+      if(this.usualTieStart >= 3) {
+        this.nowIndex++
+        this.usualTieStart = this.usualTieStart - 3
+        this.usualTieEnd = this.usualTieEnd - 3
+        this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
+      }
+    },
+    usualNext() {
+      if(this.usualTieEnd <= (this.usualTieLength - 1)) {
+        this.nowIndex++
+        this.usualTieStart = this.usualTieStart + 3
+        this.usualTieEnd = this.usualTieEnd + 3
+        if(this.usualTieEnd < (this.usualTieLength - 1)) {
+          this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
+        }
+        else {
+          this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
+        }
+      }
     }
   },
   components: {
@@ -262,14 +321,16 @@ export default {
   },
   created() {
     this.getCategory()
+    this.getScore()
+    this.toGetUsualTie()
   }
 }
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   input[type=date]::-webkit-inner-spin-button{visibility: hidden;}
-  html{
-    font-size: 20px;
+  p {
+    overflow: hidden;
   }
   @-webkit-keyframes opac{
     from {
@@ -287,6 +348,9 @@ export default {
       left:0;
     }
   }
+  a {
+       text-decoration: none;
+     }
   .animate1 {
     /*z-index: -1;*/
     position: fixed;
@@ -314,6 +378,9 @@ export default {
     position:absolute;
     border-radius:50%;
     -webkit-animation:opac 4s infinite;
+  }
+  .curent {
+    color: red !important;
   }
   .ad {
     position: fixed;
@@ -351,16 +418,13 @@ export default {
   }
 
   a:link {
-
     color:#414958;
-    text-decoration: underline;
   }
   a:visited {
     color: #4E5869;
-    text-decoration: underline;
   }
   a:hover, a:active, a:focus {
-    text-decoration: none;
+    text-decoration: underline;
   }
   .background {
     width: 100%;
@@ -436,6 +500,7 @@ export default {
     position: fixed;
     right: 25%;
     bottom: 30px;
+    cursor: pointer;
   }
   .ZiTi {
     font-size: 15px;

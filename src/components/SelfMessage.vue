@@ -6,7 +6,7 @@
         <div class="title_contain">
           <div class="title_contain_top">
           </div>
-          <div class="name">小花不会说的货币</div>
+          <div class="name">{{message.user_name}}</div>
         </div>
       </div>
       <div class="bbs_content">
@@ -18,7 +18,7 @@
               <div class="bbs_message_title">联系方式</div>
             </div>
             <div class="bbs_message_detail">
-              12312413231
+              {{message.tel}}
             </div>
           </div>
           <div class="bbs_message">
@@ -27,7 +27,7 @@
               <div class="bbs_message_title">出生日期</div>
             </div>
             <div class="bbs_message_detail">
-              1997-12-06
+              {{message.birthdat}}
             </div>
           </div>
           <div class="bbs_message">
@@ -36,7 +36,7 @@
               <div class="bbs_message_title">性别</div>
             </div>
             <div class="bbs_message_detail">
-              男
+              {{message.sex}}
             </div>
           </div>
           <div class="bbs_message">
@@ -45,7 +45,7 @@
               <div class="bbs_message_title">工作性质</div>
             </div>
             <div class="bbs_message_detail">
-              互联网行业
+              {{message.occupation}}
             </div>
           </div>
           <div class="bbs_message">
@@ -54,7 +54,7 @@
               <div class="bbs_message_title">工作地点</div>
             </div>
             <div class="bbs_message_detail">
-              深圳
+              {{message.place_of_province}}
             </div>
           </div>
         </div>
@@ -62,6 +62,28 @@
     </div>
   </div>
 </template>
+<script>
+  export default {
+    data() {
+      return {
+        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
+        baseUrl1: "http://119.29.150.121:8080/BBS",
+        message: ''
+      }
+    },
+    methods: {
+      getMessage() {
+        this.axios.get(this.baseUrl1 + "/api/getUserInformationByAccount?account=6130116007")
+          .then(res => {
+            this.message = res.data.data
+          })
+      },
+    },
+    created() {
+      this.getMessage()
+    }
+  }
+</script>
 <style scoped>
   .content {
     width: 50%;

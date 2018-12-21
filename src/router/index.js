@@ -42,7 +42,7 @@ export default new Router({
       component: SelfMessage
     },
     {
-      path: '/selfMSpace',
+      path: '/selfSpace',
       name: 'SelfSpace',
       component: SelfSpace
     }

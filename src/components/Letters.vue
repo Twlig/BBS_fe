@@ -12,13 +12,9 @@
           </div>
         </div>
         <div class="allMessage">
-          <div class="message1" onclick="change(this)">
+          <div @click="showMessage(item.account,item.user_name)" class="message1" v-for="item in users">
             <img src="../assets/img/1.jpg">
-            <span class="name">小花不会说的货币</span>
-          </div>
-          <div class="message1" onclick="change(this)">
-            <img src="../assets/img/2.jpg">
-            <span class="name">王君干哈萨沙还是</span>
+            <span class="name">{{item.user_name}}</span>
           </div>
         </div>
       </div>
@@ -27,47 +23,84 @@
           <img src="../assets/img/close.png">
         </div>
         <div class="content">
-          <div class="withWho">正在与小花不会说的货币交谈</div>
-          <div class="talkedContent">
-            <div class="other">
-              <div class="avatar_wrapper">
-                <img src="../assets/img/1.jpg">
-              </div>
-              <div class="content_container">的国际爱护打卡德哈卡傻傻的哈桑更多撒谎的哈哈的卡莎开始的卡刷点卡等哈设计大厦看到哈桑但是觉得好傻客户大卡司打开但还是客户端撒谎大家大街上看到骄傲的看啥</div>
-            </div>
-            <div class="me">
-              <div class="content_container">的国际爱护打卡德哈卡傻傻的哈桑更多撒谎的哈哈的卡莎开始的卡刷点卡等哈设计大厦看到哈桑但是觉得好傻客户大卡司打开但还是客户端撒谎大家大街上看到骄傲的看啥</div>
-              <div class="avatar_wrapper">
-                <img src="../assets/img/2.jpg">
-              </div>
-            </div>
-            <div class="other">
-              <div class="avatar_wrapper">
-                <img src="../assets/img/1.jpg">
-              </div>
-              <div class="content_container">得好傻客户大卡司打开但还家大街上看到骄傲的看啥</div>
-            </div>
-            <div class="me">
-              <div class="content_container">的国际爱护打卡德哈卡傻傻的哈桑更多撒谎的哈哈的卡莎开始的卡刷点卡等哈设计大厦看到哈桑但是觉得好傻客户大卡司打开但还是客户端撒谎大家大街上看到骄傲的看啥</div>
-              <div class="avatar_wrapper">
-                <img src="../assets/img/2.jpg">
+          <div v-if="isUser">
+            <div class="withWho">正在与{{talkUser}}交谈</div>
+            <div class="talkedContent">
+              <div v-for="item in talkMessage">
+                <div v-if="item.account_send == talkAccount" class="other">
+                  <div class="avatar_wrapper">
+                    <img src="../assets/img/1.jpg">
+                  </div>
+                  <div class="content_container">{{item.message_content}}</div>
+                </div>
+                <div v-if="item.account_send == userAccount" class="me">
+                  <div class="content_container">{{item.message_content}}</div>
+                  <div class="avatar_wrapper">
+                    <img src="../assets/img/2.jpg">
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="me">
-              <div class="content_container">还是客户端撒谎大家大街上看到骄傲的看啥</div>
-              <div class="avatar_wrapper">
-                <img src="../assets/img/2.jpg">
-              </div>
-            </div>
+            <textarea class="talking" maxlength="200" rows="5" cols="5" v-model="contentMessage"></textarea>
+            <button @click="sendMessage()">发送</button>
           </div>
-          <textarea class="talking" maxlength="200" rows="5" cols="5"></textarea>
-          <button>发送</button>
         </div>
       </div>
       <div style="clear: both"></div>
     </div>
   </div>
 </template>
+<script>
+  export default {
+    data() {
+      return {
+        baseUrl1: "http://119.29.150.121:8080/BBS",
+        users: [],
+        userAccount: '6130116007',
+        isUser: false,
+        talkUser: '',
+        talkAccount: '',
+        talkMessage: [],
+        contentMessage: ''
+      }
+    },
+    methods: {
+      getUser() {
+        this.axios.get(this.baseUrl1 + "/api/getUsersOfCommunication?account=" + "6130116007")
+          .then(res => {
+            this.users = res.data.data.users
+          })
+      },
+      showMessage(account,name) {
+        this.talkUser = name
+        this.talkAccount = account
+        let _this = this
+        this.axios.get(_this.baseUrl1 + "/api/showConversation?account_1="+ _this.userAccount + "&account_2=" + account)
+          .then(res => {
+            if(res.data.status == '1') {
+              _this.isUser = true
+              _this.talkMessage = res.data.data
+            }
+          })
+      },
+      sendMessage() {
+        this.axios.get(this.baseUrl1 + "/api/sendMessage?account_send=" + this.userAccount + "&account_receive=" + this.talkAccount +"&message_content=" + this.contentMessage)
+          .then(res => {
+            if(res.data.status != '1') {
+              alert("发送信息失败")
+            }
+            else {
+              this.contentMessage = ''
+              this.showMessage(this.talkAccount,this.talkUser)
+            }
+          })
+      }
+    },
+    created() {
+      this.getUser()
+    }
+  }
+</script>
 <style scoped>
   #letter {
     width: 700px;

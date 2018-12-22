@@ -2,7 +2,7 @@
   <div>
     <section class="container">
       <div class="header">
-        <h1>标题标题标题标题</h1>
+        <h1>{{upTie.post_title}}</h1>
         <div class="title_buttons">
           <button @click="setGood()" v-if="type == 1">精华</button>
           <button @click="setTop()" v-if="type == 1">置顶</button>
@@ -16,48 +16,36 @@
           <div class="content_avatar_wrapper">
             <img src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
           </div>
-          <span class="content_username">用户名用户名用户名</span>
+          <span class="content_username">{{upTie.user_name}}</span>
         </div>
         <div class="content_right">
           <div class="text">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Recusandae maxime fugit numquam. Esse quam numquam aspernatur inventore, nesciunt recusandae amet eos explicabo consequuntur eaque. Ea, nihil! Iure ab ipsa assumenda?
+            {{upTie.post_content}}
           </div>
-          <span>1楼 2018-12-13 00:00:00 <a href="#">回复</a></span>
+          <span>1楼 {{upTie.post_time}} <a href="#">回复</a></span>
         </div>
       </div>
-      <div class="content">
-        <div class="content_left">
+      <div class="content" v-for="item in SjTieAns">
+        <div class="content_left" v-for="(item3,index) in item" v-if="index == 0">
           <div class="content_avatar_wrapper">
             <img src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
           </div>
-          <span class="content_username">用户名用户名用户名</span>
+          <span class="content_username">{{item3.user_name_1}}</span>
         </div>
-        <div class="content_right">
-          <div class="text">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic consequuntur quibusdam sint nisi quam repellat voluptatum adipisci ratione vero nemo amet, sit fugit obcaecati consequatur omnis facilis deserunt natus vitae.
+        <div class="content_right" v-for="(item1,index) in item" v-if="index == 0">
+          <div class="text" v-if="item1.reply_id == '0' ">
+            {{item1.reply_content}}
           </div>
-          <span>1楼 2018-12-13 00:00:00 <a href="#">回复</a></span>
-          <div class="content_comment_wrapper">
+          <span>1楼 {{item1.reply_time}} <a href="#">回复</a></span>
+          <div class="content_comment_wrapper" v-for="(item2,index) in item" v-if="index != 0">
             <div class="comment_item">
               <div class="comment_content">
                 <div class="content_avatar_wrapper">
                   <img src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
                 </div>
                 <div class="content_text_wrapper">
-                  <span class="username">用户名用户名</span>:
-                  <span class="text">回复文字回复文字Lorem ipsum dolor sit amet consectetur adipisicing elit. Modi rerum velit cumque perferendis vitae, libero in fugit magni aspernatur quo ea aperiam ut, voluptates perspiciatis nesciunt, nam enim non obcaecati?</span>
-                </div>
-              </div>
-              <span class="comment_status">2018-12-14 14:28 <a href="#">回复</a></span>
-            </div>
-            <div class="comment_item">
-              <div class="comment_content">
-                <div class="content_avatar_wrapper">
-                  <img src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
-                </div>
-                <div class="content_text_wrapper">
-                  <span class="username">用户名用户名</span>:
-                  <span class="text">回复文字回复文字Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis enim magni eius nisi tempore ut reiciendis cumque temporibus adipisci repellat quia fuga voluptatem quaerat eaque, sapiente mollitia iusto corrupti harum?</span>
+                  <span class="username">{{item2.user_name_1}}</span>:
+                  <span class="text">回复{{item2.user_name_2}}:{{item2.reply_content}}</span>
                 </div>
               </div>
               <span class="comment_status">2018-12-14 14:28 <a href="#">回复</a></span>
@@ -94,7 +82,9 @@
         type: 0,
         baseUrl1: "http://119.29.150.121:8080/BBS",
         baseUrl2: "http://120.79.211.126:8080/test/",
-        topTieLength: 0
+        topTieLength: 0,
+        SjTieAns: [],
+        upTie: ''
       }
     },
     methods: {
@@ -138,11 +128,39 @@
               }
             })
         }
+      },
+      getTie() {
+        this.axios.get(this.baseUrl1 + "/api/getReplyInformationByPostID?post_id=" + this.$route.query.postId)
+          .then(res => {
+            if(res.data.status == '1') {
+              this.SjTieAns = res.data.data.replyInformation
+              // this.ansNum = this.SjTieAns.length
+            }
+            else if(res.data.status == '-1') {
+              alert("当前帖子回复为空")
+            }
+            else {
+              alert("请求失败")
+            }
+          })
+      },
+      getUpTie() {
+        this.axios.get(this.baseUrl1 + "/api/getPostByPostId?post_id=" + this.$route.query.postId)
+          .then(res => {
+            if(res.data.status == '1') {
+              this.upTie = res.data.data
+            }
+            else {
+              alert("数据请求失败")
+            }
+          })
       }
     },
     created() {
       this.getType()
       this.toGetTopTie()
+      this.getUpTie()
+      this.getTie()
     }
   }
 </script>
@@ -222,6 +240,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     margin: 30px 0;
+    text-align: center;
   }
   .content .content_right {
     background-color: #fff;

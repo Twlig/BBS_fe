@@ -6,6 +6,7 @@
         <span class="username">{{scoreTie.username}}</span>
         <span class="time">{{scoreTie.post_time}}</span>
       </div>
+      <div>{{scoreTie.post_content}}</div>
       <div class="message">您的回答被采纳后将获得：系统奖励 <span class="bonus"><i class="fa fa-database"></i>{{scoreTie.post_score}}</span>（财富值+成长值）</div>
       <div class="answer_wrapper">
         <div class="head"><i class="fa fa-arrows-alt"></i></div>
@@ -28,7 +29,7 @@
             </div>
             <div class="actions">
               <span @click="ansOtherUp(index)" class="comment_button"><i class="fa fa-commenting-o"></i>评论</span>
-              <button v-if="account == scoreTie.account && scoreTie.is_finish == '0'" class="admit_btn" @click="adopt(index)">采纳</button>
+              <button v-if="account == scoreTie.account" class="admit_btn" @click="adopt(index)">采纳</button>
             </div>
           </div>
           <div class="content_comment_wrapper" v-if="item1.reply_id != '0'">
@@ -86,6 +87,9 @@
             if(res.data.status != '1') {
               alert("回复失败")
             }
+            else {
+              this.getTie()
+            }
           })
       },
       getTie() {
@@ -94,6 +98,9 @@
             if(res.data.status == '1') {
               this.SjTieAns = res.data.data.replyInformation
               this.ansNum = this.SjTieAns.length
+            }
+            else if(res.data.status == '-1') {
+              alert("当前帖子回复为空")
             }
             else {
               alert("请求失败")
@@ -124,7 +131,8 @@
           post_id: this.$route.query.postId,
           post_score: this.scoreTie.post_score
         }
-        this.axios.post(this.baseUrl + " /api/adoptReply",data)
+        console.log(data)
+        this.axios.post(this.baseUrl + "/api/adoptReply",data)
           .then(res => {
             if(res.data.status != '0') {
               alert("操作失败")

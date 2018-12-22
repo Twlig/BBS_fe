@@ -84,16 +84,21 @@
           })
       },
       sendMessage() {
-        this.axios.get(this.baseUrl1 + "/api/sendMessage?account_send=" + this.userAccount + "&account_receive=" + this.talkAccount +"&message_content=" + this.contentMessage)
-          .then(res => {
-            if(res.data.status != '1') {
-              alert("发送信息失败")
-            }
-            else {
-              this.contentMessage = ''
-              this.showMessage(this.talkAccount,this.talkUser)
-            }
-          })
+        if(this.contentMessage != '') {
+          this.axios.get(this.baseUrl1 + "/api/sendMessage?account_send=" + this.userAccount + "&account_receive=" + this.talkAccount +"&message_content=" + this.contentMessage)
+            .then(res => {
+              if(res.data.status != '1') {
+                alert("发送信息失败")
+              }
+              else {
+                this.contentMessage = ''
+                this.showMessage(this.talkAccount,this.talkUser)
+              }
+            })
+        }
+        else {
+          alert("发送信息不能为空")
+        }
       }
     },
     created() {

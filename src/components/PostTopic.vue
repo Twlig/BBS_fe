@@ -84,7 +84,7 @@
             }
             else {
               let data = {
-                account: '6130116007',
+                account: localStorage.getItem("account"),
                 category_id: _this.categorySelected,
                 image: _this.imgUrl,
                 post_content: _this.postContent,

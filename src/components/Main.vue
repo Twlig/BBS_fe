@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="animate1 wave">
-      <div class="w1"></div>
-      <div class="w2"></div>
-      <div class="w3"></div>
-      <div class="w4"></div>
-    </div>
+    <!--<div class="animate1 wave">-->
+      <!--<div class="w1"></div>-->
+      <!--<div class="w2"></div>-->
+      <!--<div class="w3"></div>-->
+      <!--<div class="w4"></div>-->
+    <!--</div>-->
     <img id="apDiv6" src="../assets/img/pencil.png" width="50px" height="50px" alt="发帖" longdesc="#" @click="toPostTopic()">
-    <div class="background">
+    <div>
     <div class="container">
       <div class="header"><a href="#"> <img src="../assets/img/BBS.png"name="Insert_logo" width="125" height="84" id="Insert_logo" style="display:block;" /></a>
         <!-- end .header --></div>
@@ -17,42 +17,57 @@
         </ul>
       </div>
       <div class="content">
-        <p><button class="bt1">置顶</button><a href="#" class="TieZiZT">我就想问问，如今养这么多孩子需要多少钱？</a>
-          <input type="submit" name="FaTie" id="FaTie" value="取消">
-        </p>
-        <p><button class="bt1">置顶</button><a href="#" class="TieZiZT">剧情反转？加外长严厉警告特朗普：孟晚舟事件政治化</a>
-          <input type="submit" name="FaTie3" id="FaTie3" value="取消">
-        </p>
-        <p><button class="bt1">置顶</button><a href="#" class="TieZiZT">八一八剧组里那些迷信的讲究</a>
-          <input type="submit" name="FaTie2" id="FaTie2" value="取消">
-        </p>
-        <hr align="center" size="10" >
-        <p><button class="bt2">精</button><a href="#" class="TieZiZT">【广安华蓥】广安的山水、伟人故里及华蓥山的雪</a>
-          <input type="submit" name="FaTie4" id="FaTie4" value="取消">
-        </p>
-        <p><button class="bt2">精</button><a href="#" class="TieZiZT">DG风波过后，门店人头攒动 。国人真不长记性？</a>
-          <input type="submit" name="FaTie5" id="FaTie5" value="取消">
-        </p>
-        <p><button class="bt2">精</button><a href="#" class="TieZiZT">外企辞职，去深山少数民族村落当个女书记</a>
-          <input type="submit" name="FaTie6" id="FaTie6" value="取消">
-        </p>
-        <p style="text-align:left;"><input type="submit" name="FaTie7" id="FaTie7" value="上一页">
-          <span v-for="(index) in usualTieGroup1">
-            <span v-if="usualTieGroup1 > 8"><a :class="[nowIndex == index ? 'curent' : '']" v-if="index < 5 || index > (usualTieGroup1 - 4)" href="#">{{index}}&nbsp;</a><a v-if="index === usualTieGroup1 - 5">...</a></span>
-            <a href="#" v-if="usualTieGroup1 <= 8">{{index}}&nbsp;</a>
+        <div>
+          <p v-for="item in topTie"><button class="bt1">置顶</button><a @click="toTieDetail(item.post_id)" class="TieZiZT">{{item.post_title}}</a>
+            <img class="tieIcon" src="../assets/img/top1.png" @click="moveUpPost(item.post_id)">
+            <img class="tieIcon" src="../assets/img/down.png" @click="moveDownPost(item.post_id)">
+            <img class="tieIcon" src="../assets/img/undo.png" @click="cancelSticky(item.post_id)">
+          </p>
+        </div>
+        <!--加精贴-->
+        <div v-if="goodTieLength > 0">
+          <hr align="center" size="10" >
+          <p v-for="item in nowGoodTie"><button class="bt2">精</button><a @click="toTieDetail(item.post_id)" class="TieZiZT">{{item.post_title}}</a>
+            <img class="tieIcon" src="../assets/img/undo.png" @click="cancelEditing(item.post_id)"/>
+          </p>
+          <p style="text-align:left;">
+            <input @click="goodPre()" type="submit" name="FaTie7" id="FaTie7" value="上一页">
+            <span v-for="(index) in goodTieGroup">
+            <span @click="toGoodIndex(index)" v-if="goodTieGroup > 8"><a :class="[goodNowIndex == index ? 'current' : '']" v-if="index < 5 || index > (goodTieGroup - 4)">{{index}}&nbsp;</a><a v-if="index === goodTieGroup - 5">...</a></span>
+            <a @click="toGoodIndex(index)" :class="[goodNowIndex == index ? 'current' : '']" v-if="goodTieGroup <= 8">{{index}}&nbsp;</a>
           </span>
-          <span style="font-size: 13px">跳转到</span><input type="text" style="width: 20px; height: 20px;background-color: #fff;color: #333;text-align: center;border: 1px rgb(63,137,236) solid;" @keyup.enter="toUsualIndex(index)"/>
-          <input type="submit" name="FaTie10" id="FaTie10" value="下一页">
-        </p>
-
-        <hr size="10">
-        <p v-for="item in scoreTie"><button class="bt3">赏</button><a href="#" class="TieZiZT">{{item.post_title}}</a></p>
-        <p style="text-align:left;"><input type="submit" name="FaTie8" id="FaTie8" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input type="submit" name="FaTie11" id="FaTie12" value="下一页">
-        </p>
-        <hr size="10">
-        <p v-for="item in nowusualTie"><button class="bt1">话题</button><a href="#" class="TieZiZT">{{item.post_title}}</a></p>
-        <p style="text-align:left;"><input @click="usualPre()" type="submit" name="FaTie9" id="FaTie9" value="上一页"><a href="#">1</a>&nbsp;<a href="#">2</a>&nbsp;<a href="#">3</a>&nbsp;<a href="#">4</a>&nbsp;<a href="#">5</a><input @click="usualNext()" type="submit" name="FaTie11" id="FaTie11" value="下一页">
-        </p>
+            <span style="font-size: 13px">跳转到</span><input v-model="goodHrefIndex" type="text" class="hrefInput" @keyup.enter="toGoodIndex1()"/>
+            <input @click="goodNext()" type="submit" name="FaTie10" id="FaTie10" value="下一页">
+          </p>
+        </div>
+        <!--赏金贴-->
+        <div v-if="scoreTieLength > 0">
+          <hr size="10">
+          <p @click="toTieDetailSj(item.post_id)" v-for="item in nowScoreTie"><button class="bt3">赏</button><a class="TieZiZT">{{item.post_title}}</a></p>
+          <p style="text-align:left;">
+            <input @click="scorePre()" type="submit" name="FaTie8" id="FaTie8" value="上一页">
+            <span v-for="(index) in scoreTieGroup">
+            <span @click="toScoreIndex(index)" v-if="scoreTieGroup > 8"><a @click="toUsualIndex(index)" :class="[scoreNowIndex == index ? 'current' : '']" v-if="index < 5 || index > (scoreTieGroup - 4)" href="#">{{index}}&nbsp;</a><a v-if="index === scoreTieGroup - 5">...</a></span>
+            <a @click="toScoreIndex(index)" :class="[scoreNowIndex == index ? 'current' : '']" href="#" v-if="scoreTieGroup <= 8">{{index}}&nbsp;</a>
+            </span>
+            <span style="font-size: 13px">跳转到</span><input v-model="scoreHrefIndex" type="text" class="hrefInput" @keyup.enter="toScoreIndex1()"/>
+            <input @click="scoreNext()" type="submit" name="FaTie11" id="FaTie12" value="下一页">
+          </p>
+        </div>
+        <!--普通贴 -->
+        <div v-if="usualTieLength > 0">
+          <hr size="10">
+          <p @click="toTieDetail(item.post_id)" v-for="item in nowusualTie"><button class="bt1">话题</button><a class="TieZiZT">{{item.post_title}}</a></p>
+          <p style="text-align:left;">
+            <input @click="usualPre()" type="submit" name="FaTie9" id="FaTie9" value="上一页">
+            <span v-for="(index) in usualTieGroup">
+            <span @click="toUsualIndex(index)" v-if="usualTieGroup > 8"><a :class="[nowIndex == index ? 'current' : '']" v-if="index < 5 || index > (usualTieGroup - 4)">{{index}}&nbsp;</a><a v-if="index === usualTieGroup - 5">...</a></span>
+            <a @click="toUsualIndex(index)" :class="[nowIndex == index ? 'current' : '']" v-if="usualTieGroup <= 8">{{index}}&nbsp;</a>
+          </span>
+            <span style="font-size: 13px">跳转到</span><input v-model="hrefIndex" type="text" class="hrefInput" @keyup.enter="toUsualIndex1()"/>
+            <input @click="usualNext()" type="submit" name="FaTie11" id="FaTie11" value="下一页">
+          </p>
+        </div>
         <!-- end .content -->
       </div>
       <div class="sidebar2">
@@ -65,8 +80,8 @@
         </div>
         <!-- end .sidebar2 -->
       </div>
-      <div class="footer">
-      </div>
+      <!--<div class="footer">-->
+      <!--</div>-->
     </div>
     </div>
     <div class="ad">
@@ -171,14 +186,31 @@ export default {
       passwordLogin: '',
       category: [],
       message: '',
+      goodTie: [],
+      nowGoodTie: [],
+      goodTieLength: 0,
+      goodTieStart: 0,
+      goodTieEnd: 3,
+      goodTieGroup: 9,
+      goodNowIndex: 1,
+      goodHrefIndex: null,
       scoreTie: [],
+      nowScoreTie: [],
+      scoreTieLength: 0,
+      scoreTieStart: 0,
+      scoreTieEnd: 3,
+      scoreTieGroup: 9,
+      scoreNowIndex: 1,
+      scoreHrefIndex: null,
       usualTie: [],
       nowusualTie: [],
       usualTieLength: 0,
       usualTieStart: 0,
       usualTieEnd: 3,
-      usualTieGroup1: 9,
-      nowIndex: 1
+      usualTieGroup: 9,
+      nowIndex: 1,
+      hrefIndex: null,
+      topTie: []
     }
   },
   methods: {
@@ -193,17 +225,17 @@ export default {
           }
         })
     },
-    getScore() {
-      this.axios.get(this.baseUrl + "/api/getScoreTie")
-        .then(res => {
-          if(res.data.status == '0') {
-            this.scoreTie = res.data.data
-          }
-          else {
-            alert("请求失败")
-          }
-        })
-    },
+    // getScore() {
+    //   this.axios.get(this.baseUrl + "/api/getScoreTie")
+    //     .then(res => {
+    //       if(res.data.status == '0') {
+    //         this.scoreTie = res.data.data
+    //       }
+    //       else {
+    //         alert("请求失败")
+    //       }
+    //     })
+    // },
     tologin() {
       this.showModal = true
       this.isLoginT = true
@@ -265,21 +297,36 @@ export default {
         this.axios.post(this.baseUrl + "/api/login",data)
           .then(res => {
             if(res.data.status != '0') {
+              this.message = "登录失败"
               this.isAlert = true
+              let _this = this
+              setTimeout(function () {
+                _this.isAlert = false
+              },1500)
             }
             else {
               this.isLogin = true
               this.isLoginT = false
               this.showModal = false
+              localStorage.setItem("account",this.accountLogin)
+              localStorage.setItem("type",res.data.data.type)
             }
           })
       }
     },
     toPostTopic() {
-      this.$router.push('/postTopic')
+      if(this.isLogin) {
+        this.$router.push('/postTopic')
+      }
+      else {
+        this.tologin()
+      }
+    },
+    toTieDetail(postId) {
+      this.$router.push("/index?postId=" + postId)
     },
     toGetUsualTie() {
-      this.axios.get(this.baseUrl2 + "/getPost")
+      this.axios.get(this.baseUrl2 + "getPost")
         .then(res => {
           this.usualTie = res.data.data.posts
           this.usualTieLength = this.usualTie.length
@@ -292,9 +339,88 @@ export default {
           }
         })
     },
+    toGetScoreTie() {
+      this.axios.get(this.baseUrl + "/api/getScoreTie")
+        .then(res => {
+          this.scoreTie = res.data.data
+          this.scoreTieLength = this.scoreTie.length
+          this.nowScoreTie = this.scoreTie.slice(this.scoreTieStart,this.scoreTieEnd)
+          if(this.scoreTieLength % 3 === 0) {
+            this.scoreTieGroup = parseInt(this.scoreTieLength / 3)
+          }
+          else {
+            this.scoreTieGroup = parseInt(this.scoreTieLength / 3) + 1
+          }
+        })
+    },
+    toGetGoodTie() {
+      this.axios.get(this.baseUrl2 + "getEditingPost")
+        .then(res => {
+          if(res.data.status == '1') {
+            this.goodTie = res.data.data.posts
+            this.goodTieLength = this.goodTie.length
+            this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieEnd)
+            if(this.goodTieLength % 3 === 0) {
+              this.goodTieGroup = parseInt(this.goodTieLength / 3)
+            }
+            else {
+              this.goodTieGroup = parseInt(this.goodTieLength / 3) + 1
+            }
+          }
+          else {
+            alert("获取加精信息失败")
+          }
+        })
+    },
+    toGetTopTie() {
+      this.axios.get(this.baseUrl2 + "getStickyPost")
+        .then(res => {
+          if(res.data.status == '1') {
+            this.topTie = res.data.data.posts
+          }
+          else {
+            alert("置顶帖子获取失败")
+          }
+        })
+    },
+    moveUpPost(postId) {
+      this.axios.get(this.baseUrl2 + "moveUpPost?post_id=" + postId)
+        .then(res => {
+          if(res.data.status != '1') {
+            alert("上移失败")
+          }
+        })
+    },
+    moveDownPost(postId) {
+      this.axios.get(this.baseUrl2 + "moveDownPost?post_id=" + postId)
+        .then(res => {
+          if(res.data.status != '1') {
+            alert("下移失败")
+          }
+        })
+    },
+    cancelSticky(postId) {
+      this.axios.get(this.baseUrl2 + "cancelSticky?post_id=" + postId)
+        .then(res => {
+          if(res.data.status != '1') {
+            alert("取消置顶失败")
+          }
+        })
+    },
+    cancelEditing(postId) {
+      this.axios.get(this.baseUrl2 + "cancelEditing?post_id=" + postId)
+        .then(res => {
+          if(res.data.status != '1') {
+            alert("取消加精失败")
+          }
+        })
+    },
+    toTieDetailSj(postId) {
+      this.$router.push("/ask?postId=" + postId)
+    },
     usualPre() {
       if(this.usualTieStart >= 3) {
-        this.nowIndex++
+        this.nowIndex--
         this.usualTieStart = this.usualTieStart - 3
         this.usualTieEnd = this.usualTieEnd - 3
         this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
@@ -305,11 +431,118 @@ export default {
         this.nowIndex++
         this.usualTieStart = this.usualTieStart + 3
         this.usualTieEnd = this.usualTieEnd + 3
-        if(this.usualTieEnd < (this.usualTieLength - 1)) {
+        if(this.usualTieStart <= (this.usualTieLength - 1)) {
           this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
         }
         else {
-          this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
+          this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieLength)
+        }
+      }
+    },
+    toUsualIndex1() {
+      if(this.hrefIndex >= this.usualTieGroup) {
+        this.nowIndex = this.usualTieGroup
+        this.usualTieStart = (this.usualTieGroup-1) * 3
+        this.usualTieEnd = this.usualTieStart + 3
+        this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieLength)
+      }
+      else {
+        this.nowIndex = this.hrefIndex
+        this.usualTieStart = (this.hrefIndex-1) * 3
+        this.usualTieEnd = this.usualTieStart + 3
+        this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
+      }
+      this.hrefIndex = null
+    },
+    toUsualIndex(index) {
+        console.log(index)
+        this.nowIndex = index
+        this.usualTieStart = (this.nowIndex-1) * 3
+        this.usualTieEnd = this.usualTieStart + 3
+        this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
+    },
+    goodPre() {
+      if(this.goodTieStart >= 3) {
+        this.goodNowIndex--
+        this.goodTieStart = this.goodTieStart - 3
+        this.goodTieEnd = this.goodTieEnd - 3
+        this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieEnd)
+      }
+    },
+    goodNext() {
+      if(this.goodTieEnd <= (this.goodTieLength - 1)) {
+        this.goodNowIndex++
+        this.goodTieStart = this.goodTieStart + 3
+        this.goodTieEnd = this.goodTieEnd + 3
+        if(this.goodTieStart <= (this.goodTieLength - 1)) {
+          this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieEnd)
+        }
+        else {
+          this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieLength)
+        }
+      }
+    },
+    toGoodIndex1() {
+      if(this.goodHrefIndex >= this.goodTieGroup) {
+        this.goodNowIndex = this.goodTieGroup
+        this.goodTieStart = (this.goodTieGroup-1) * 3
+        this.goodTieEnd = this.goodTieStart + 3
+        this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieLength)
+      }
+      else {
+        this.goodNowIndex = this.goodHrefIndex
+        this.goodTieStart = (this.goodHrefIndex-1) * 3
+        this.goodTieEnd = this.goodTieStart + 3
+        this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieEnd)
+      }
+      this.goodHrefIndex = null
+    },
+    toGoodIndex(index) {
+      console.log(index)
+      this.goodNowIndex = index
+      this.goodTieStart = (this.goodNowIndex-1) * 3
+      this.goodTieEnd = this.goodTieStart + 3
+      this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieEnd)
+    },
+    toScoreIndex1() {
+      if(this.scoreHrefIndex >= this.scoreTieGroup) {
+        this.scoreNowIndex = this.scoreTieGroup
+        this.scoreTieStart = (this.scoreTieGroup-1) * 3
+        this.scoreTieEnd = this.scoreTieStart + 3
+        this.nowScoreTie = this.scoreTie.slice(this.scoreTieStart,this.scoreTieLength)
+      }
+      else {
+        this.scoreNowIndex = this.scoreHrefIndex
+        this.scoreTieStart = (this.scoreHrefIndex-1) * 3
+        this.scoreTieEnd = this.scoreTieStart + 3
+        this.nowScoreTie = this.scoreTie.slice(this.scoreTieStart,this.scoreTieEnd)
+      }
+      this.scoreHrefIndex = null
+    },
+    toScoreIndex(index) {
+      this.scoreNowIndex = index
+      this.scoreTieStart = (this.scoreNowIndex-1) * 3
+      this.scoreTieEnd = this.scoreTieStart + 3
+      this.nowScoreTie = this.scoreTie.slice(this.scoreTieStart,this.scoreTieEnd)
+    },
+    scorePre() {
+      if(this.scoreTieStart >= 3) {
+        this.scoreNowIndex--
+        this.scoreTieStart = this.scoreTieStart - 3
+        this.scoreTieEnd = this.scoreTieEnd - 3
+        this.nowScoreTie = this.goodTie.slice(this.scoreTieStart,this.scoreTieEnd)
+      }
+    },
+    scoreNext() {
+      if(this.scoreTieEnd <= (this.scoreTieLength - 1)) {
+        this.scoreNowIndex++
+        this.scoreTieStart = this.scoreTieStart + 3
+        this.scoreTieEnd = this.scoreTieEnd + 3
+        if(this.scoreTieStart <= (this.scoreTieLength - 1)) {
+          this.nowScoreTie = this.scoreTie.slice(this.scoreTieStart,this.scoreTieEnd)
+        }
+        else {
+          this.nowScoreTie = this.scoreTie.slice(this.scoreTieStart,this.scoreTieLength)
         }
       }
     }
@@ -320,9 +553,14 @@ export default {
     Alert,
   },
   created() {
+    if(localStorage.getItem("account") != '') {
+      this.isLogin = true
+    }
     this.getCategory()
-    this.getScore()
     this.toGetUsualTie()
+    this.toGetScoreTie()
+    this.toGetGoodTie()
+    this.toGetTopTie()
   }
 }
 </script>
@@ -349,8 +587,18 @@ export default {
     }
   }
   a {
-       text-decoration: none;
+    text-decoration: none;
+    color: #414958;
+    cursor: pointer;
      }
+  .hrefInput {
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    color: #333;
+    text-align: center;
+    border: 1px rgb(63,137,236) solid;
+  }
   .animate1 {
     /*z-index: -1;*/
     position: fixed;
@@ -379,7 +627,13 @@ export default {
     border-radius:50%;
     -webkit-animation:opac 4s infinite;
   }
-  .curent {
+  .tieIcon {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    cursor: pointer;
+  }
+  .current {
     color: red !important;
   }
   .ad {
@@ -393,7 +647,7 @@ export default {
   .ad_title {
     width: 100%;
     height: 20px;
-    color: #fff;
+    color: #333;
     font-size: 18px;
     text-align: center;
     margin-bottom: 10px;
@@ -425,12 +679,6 @@ export default {
   }
   a:hover, a:active, a:focus {
     text-decoration: underline;
-  }
-  .background {
-    width: 100%;
-    height: 100%;
-    background-color: #444;
-    margin-top: -20px;
   }
   .container {
     width: 50%;

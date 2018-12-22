@@ -4,10 +4,10 @@
       <div class="header">
         <h1>标题标题标题标题</h1>
         <div class="title_buttons">
-          <button>精华</button>
-          <button>置顶</button>
+          <button @click="setGood()" v-if="type == 1">精华</button>
+          <button @click="setTop()" v-if="type == 1">置顶</button>
           <button>修改</button>
-          <button>删除</button>
+          <!--<button>删除</button>-->
           <button>回复</button>
         </div>
       </div>
@@ -88,6 +88,45 @@
   </div>
 </template>
 <script>
+  export default {
+    data() {
+      return {
+        type: 0,
+        baseUrl1: "http://119.29.150.121:8080/BBS",
+        baseUrl2: "http://120.79.211.126:8080/test/"
+      }
+    },
+    methods: {
+      getType() {
+        this.type = localStorage.getItem("type")
+      },
+      setGood() {
+        this.axios.post(this.baseUrl2 + "doPostEditing?post_id=" + this.$route.query.postId)
+          .then(res => {
+            if(res.data.status == '1') {
+              alert("加精成功")
+            }
+            else {
+              alert("加精失败")
+            }
+          })
+      },
+      setTop() {
+        this.axios.post(this.baseUrl2 + "doPostSticky?post_id=" + this.$route.query.postId)
+          .then(res => {
+            if(res.data.status == '1') {
+              alert("置顶成功")
+            }
+            else {
+              alert("置顶失败")
+            }
+          })
+      }
+    },
+    created() {
+      this.getType()
+    }
+  }
 </script>
 <style scoped>
   .container {

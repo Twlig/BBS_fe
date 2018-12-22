@@ -1,18 +1,18 @@
 <template>
   <div class="container-fluid">
     <div class="col-md-6 col-lg-6 col-xs-12 col-md-offset-3 col-lg-offset-3">
-      <h1 class="title"><i class="fa fa-exclamation-circle"></i>&nbsp;玻璃采光顶按规范分类是否属于幕墙工程</h1>
+      <h1 class="title"><i class="fa fa-exclamation-circle"></i>&nbsp;{{scoreTie.post_title}}</h1>
       <div class="status">
-        <span class="username">dickduan88</span>
-        <span class="time">6分钟前</span>
+        <span class="username">{{scoreTie.account}}</span>
+        <span class="time">{{scoreTie.post_time}}</span>
       </div>
-      <div class="message">您的回答被采纳后将获得：系统奖励 <span class="bonus"><i class="fa fa-database"></i>15</span>（财富值+成长值）</div>
+      <div class="message">您的回答被采纳后将获得：系统奖励 <span class="bonus"><i class="fa fa-database"></i>{{scoreTie.post_score}}</span>（财富值+成长值）</div>
       <div class="answer_wrapper">
         <div class="head"><i class="fa fa-arrows-alt"></i></div>
-        <textarea class="field"></textarea>
+        <textarea class="field" v-model="postContent"></textarea>
       </div>
       <div class="submit_wrapper">
-        <button class="submit">提交回答</button>
+        <button class="submit" @click="postAns()">提交回答</button>
       </div>
       <hr>
       <div class="count_title">2个回答</div>
@@ -25,24 +25,51 @@
         </div>
         <div class="actions">
           <span class="comment_button"><i class="fa fa-commenting-o"></i>评论</span>
-          <button class="admit_btn">采纳</button>
-        </div>
-      </div>
-      <div class="answer_item">
-        <button class="best_btn">最佳答案</button>
-        <div class="content">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Doloremque non quam sint excepturi nobis laborum tempore animi enim iure illo, libero reiciendis possimus exercitationem, officiis assumenda rem! Nobis, alias nam?</div>
-        <div class="answer_status">
-          <span class="author">一起装修网官网</span>
-          <span class="time">发布于3分钟前</span>
-        </div>
-        <div class="actions">
-          <span class="comment_button"><i class="fa fa-commenting-o"></i>评论</span>
-          <button class="admit_btn">采纳</button>
+          <button v-if="account == scoreTie.account" class="admit_btn">采纳</button>
         </div>
       </div>
     </div>
   </div>
 </template>
+<script>
+  export default {
+    data() {
+      return {
+        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
+        baseUrl1: "http://119.29.150.121:8080/BBS",
+        scoreTie: '',
+        account: '',
+        postContent: ''
+      }
+    },
+    methods: {
+      getScoreTie() {
+        this.account = localStorage.getItem("account")
+        this.axios.get(this.baseUrl + "/api/getScoreTie?id=" + this.$route.query.postId)
+          .then(res => {
+            if(res.data.status == '0') {
+              this.scoreTie = res.data.data[0]
+            }
+            else {
+              aletr("请求失败")
+            }
+          })
+      },
+      postAns() {
+        this.axios.get(this.baseUrl1 + "/api/replyAndSave?post_id=" + this.$route.query.postId + "&account=" + this.account + "&reply_content=" + this.postContent + "&reply_id=&image=")
+          .then(res => {
+            if(res.data.status != '1') {
+              alert("回复失败")
+            }
+          })
+      }
+    },
+    created() {
+
+      this.getScoreTie()
+    }
+  }
+</script>
 <style scoped>
   .container-fluid {
     box-sizing: border-box;

@@ -36,7 +36,7 @@
             <span @click="toGoodIndex(index)" v-if="goodTieGroup > 8"><a :class="[goodNowIndex == index ? 'current' : '']" v-if="index < 5 || index > (goodTieGroup - 4)">{{index}}&nbsp;</a><a v-if="index === goodTieGroup - 5">...</a></span>
             <a @click="toGoodIndex(index)" :class="[goodNowIndex == index ? 'current' : '']" v-if="goodTieGroup <= 8">{{index}}&nbsp;</a>
           </span>
-            <span style="font-size: 13px">跳转到</span><input v-model="goodHrefIndex" type="text" class="hrefInput" @keyup.enter="toGoodIndex1()"/>
+            <span>跳转到</span><input v-model="goodHrefIndex" type="text" class="hrefInput" @keyup.enter="toGoodIndex1()"/>页
             <input @click="goodNext()" type="submit" name="FaTie10" id="FaTie10" value="下一页">
           </p>
         </div>
@@ -50,7 +50,7 @@
             <span @click="toScoreIndex(index)" v-if="scoreTieGroup > 8"><a @click="toUsualIndex(index)" :class="[scoreNowIndex == index ? 'current' : '']" v-if="index < 5 || index > (scoreTieGroup - 4)" href="#">{{index}}&nbsp;</a><a v-if="index === scoreTieGroup - 5">...</a></span>
             <a @click="toScoreIndex(index)" :class="[scoreNowIndex == index ? 'current' : '']" href="#" v-if="scoreTieGroup <= 8">{{index}}&nbsp;</a>
             </span>
-            <span style="font-size: 13px">跳转到</span><input v-model="scoreHrefIndex" type="text" class="hrefInput" @keyup.enter="toScoreIndex1()"/>
+            <span>跳转到</span><input v-model="scoreHrefIndex" type="text" class="hrefInput" @keyup.enter="toScoreIndex1()"/>页
             <input @click="scoreNext()" type="submit" name="FaTie11" id="FaTie12" value="下一页">
           </p>
         </div>
@@ -64,7 +64,7 @@
             <span @click="toUsualIndex(index)" v-if="usualTieGroup > 8"><a :class="[nowIndex == index ? 'current' : '']" v-if="index < 5 || index > (usualTieGroup - 4)">{{index}}&nbsp;</a><a v-if="index === usualTieGroup - 5">...</a></span>
             <a @click="toUsualIndex(index)" :class="[nowIndex == index ? 'current' : '']" v-if="usualTieGroup <= 8">{{index}}&nbsp;</a>
           </span>
-            <span style="font-size: 13px">跳转到</span><input v-model="hrefIndex" type="text" class="hrefInput" @keyup.enter="toUsualIndex1()"/>
+            <span>跳转到</span><input v-model="hrefIndex" type="text" class="hrefInput" @keyup.enter="toUsualIndex1()"/>页
             <input @click="usualNext()" type="submit" name="FaTie11" id="FaTie11" value="下一页">
           </p>
         </div>
@@ -389,6 +389,9 @@ export default {
           if(res.data.status != '1') {
             alert("上移失败")
           }
+          else {
+            this.toGetTopTie()
+          }
         })
     },
     moveDownPost(postId) {
@@ -396,6 +399,9 @@ export default {
         .then(res => {
           if(res.data.status != '1') {
             alert("下移失败")
+          }
+          else {
+            this.toGetTopTie()
           }
         })
     },
@@ -405,6 +411,9 @@ export default {
           if(res.data.status != '1') {
             alert("取消置顶失败")
           }
+          else {
+            this.toGetTopTie()
+          }
         })
     },
     cancelEditing(postId) {
@@ -412,6 +421,9 @@ export default {
         .then(res => {
           if(res.data.status != '1') {
             alert("取消加精失败")
+          }
+          else {
+            this.toGetGoodTie()
           }
         })
     },
@@ -553,7 +565,7 @@ export default {
     Alert,
   },
   created() {
-    if(localStorage.getItem("account") != '') {
+    if(localStorage.getItem("account") != null) {
       this.isLogin = true
     }
     this.getCategory()
@@ -569,6 +581,7 @@ export default {
   input[type=date]::-webkit-inner-spin-button{visibility: hidden;}
   p {
     overflow: hidden;
+    font-size: 13px;
   }
   @-webkit-keyframes opac{
     from {
@@ -592,12 +605,13 @@ export default {
     cursor: pointer;
      }
   .hrefInput {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     background-color: #fff;
     color: #333;
     text-align: center;
-    border: 1px rgb(63,137,236) solid;
+    border: 1px #666 solid;
+    outline: none;
   }
   .animate1 {
     /*z-index: -1;*/

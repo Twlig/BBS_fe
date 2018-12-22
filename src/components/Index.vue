@@ -93,12 +93,24 @@
       return {
         type: 0,
         baseUrl1: "http://119.29.150.121:8080/BBS",
-        baseUrl2: "http://120.79.211.126:8080/test/"
+        baseUrl2: "http://120.79.211.126:8080/test/",
+        topTieLength: 0
       }
     },
     methods: {
       getType() {
         this.type = localStorage.getItem("type")
+      },
+      toGetTopTie() {
+        this.axios.get(this.baseUrl2 + "getStickyPost")
+          .then(res => {
+            if(res.data.status == '1') {
+              this.topTieLength = res.data.data.posts.length
+            }
+            else {
+              alert("置顶帖子获取失败")
+            }
+          })
       },
       setGood() {
         this.axios.post(this.baseUrl2 + "doPostEditing?post_id=" + this.$route.query.postId)
@@ -112,19 +124,25 @@
           })
       },
       setTop() {
-        this.axios.post(this.baseUrl2 + "doPostSticky?post_id=" + this.$route.query.postId)
-          .then(res => {
-            if(res.data.status == '1') {
-              alert("置顶成功")
-            }
-            else {
-              alert("置顶失败")
-            }
-          })
+        if(this.topTieLength >= 5) {
+          alert("置顶帖子不能超过5个")
+        }
+        else {
+          this.axios.post(this.baseUrl2 + "doPostSticky?post_id=" + this.$route.query.postId)
+            .then(res => {
+              if(res.data.status == '1') {
+                alert("置顶成功")
+              }
+              else {
+                alert("置顶失败")
+              }
+            })
+        }
       }
     },
     created() {
       this.getType()
+      this.toGetTopTie()
     }
   }
 </script>

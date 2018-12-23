@@ -39,7 +39,7 @@
 <style scoped>
   .swiper-container {
     width: 100%;
-    height: 500px;
+    height: 400px;
   }
   .swiper-wrapper {
     width: 100%;

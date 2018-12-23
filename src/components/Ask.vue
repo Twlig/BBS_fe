@@ -13,8 +13,8 @@
         <textarea class="field" v-model="postContent"></textarea>
       </div>
       <div class="submit_wrapper">
-        <button class="submit" @click="postAns()">提交回答</button>
-        <button v-if="isAnsOther" class="submit" @click="submitAns()">回复</button>
+        <button class="submit" @click="submitAns()">提交回答</button>
+        <!--<button v-if="isAnsOther" class="submit" @click="submitAns()">回复</button>-->
       </div>
       <hr>
       <div class="count_title">{{ansNum}}个回答</div>
@@ -62,7 +62,7 @@
         postContent: '',
         SjTieAns: [],
         ansNum: 0,
-        replyId: 0,
+        // replyId: 0,
         replyIdOther: 0,
         isAnsOther: true,
         adoptAccount: ''
@@ -81,17 +81,17 @@
             }
           })
       },
-      postAns() {
-        this.axios.get(this.baseUrl1 + "/api/replyAndSave?post_id=" + this.$route.query.postId + "&account=" + this.account + "&reply_content=" + this.postContent + "&reply_id=" + this.replyId +"&image=")
-          .then(res => {
-            if(res.data.status != '1') {
-              alert("回复失败")
-            }
-            else {
-              this.getTie()
-            }
-          })
-      },
+      // postAns() {
+      //   this.axios.get(this.baseUrl1 + "/api/replyAndSave?post_id=" + this.$route.query.postId + "&account=" + this.account + "&reply_content=" + this.postContent + "&reply_id=" + this.replyId +"&image=")
+      //     .then(res => {
+      //       if(res.data.status != '1') {
+      //         alert("回复失败")
+      //       }
+      //       else {
+      //         this.getTie()
+      //       }
+      //     })
+      // },
       getTie() {
         this.axios.get(this.baseUrl1 + "/api/getReplyInformationByPostID?post_id=" + this.$route.query.postId)
           .then(res => {
@@ -116,6 +116,9 @@
           .then(res => {
             if(res.data.status != '1') {
               alert("回复失败")
+            }
+            else {
+              this.replyIdOther = '0'
             }
           })
         this.getTie()

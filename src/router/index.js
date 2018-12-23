@@ -7,6 +7,7 @@ import Letters from '@/components/Letters'
 import PostTopic from '@/components/PostTopic'
 import SelfMessage from '@/components/SelfMessage'
 import SelfSpace from '@/components/SelfSpace'
+import Chart from '@/components/Chart'
 Vue.use(Router)
 
 export default new Router({
@@ -45,6 +46,11 @@ export default new Router({
       path: '/selfSpace',
       name: 'SelfSpace',
       component: SelfSpace
+    },
+    {
+      path: '/chart',
+      name: 'Chart',
+      component: Chart
     }
   ]
 })

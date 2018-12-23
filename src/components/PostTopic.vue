@@ -4,7 +4,7 @@
       <div class="add_comment">
         <img src="../assets/img/write.png"> <h1 class="headtext">发表新帖</h1>
         <div class="input_wrapper">
-          <input class="input_field1" placeholder="请在此处填写标题" v-model="postTitle">
+          <input maxlength="25" class="input_field1" placeholder="请在此处填写标题,字数不能超过25个" v-model="postTitle">
           <select id="idState" style="width:15%" v-model="categorySelected" @change="setNeed()">
             <option v-for="item in category" :value="item.category_id">{{item.category_name}}</option>
           </select>
@@ -18,7 +18,7 @@
             </span>
           </div>
           <div class="allMessage">
-            <textarea class="input_field" rows="4" v-model="postContent">
+            <textarea class="input_field" rows="4" maxlength="100" placeholder="内容最多不能超过100字" v-model="postContent">
           </textarea>
             <div id="addImg" style="width: 100px;height: auto"></div>
           </div>
@@ -27,7 +27,7 @@
           <img class="icon" src="../assets/img/back.png">
           <span class="iconFont">返回首页</span>
         </div>
-        <button class="btn" @click="postTopic()">发表</button>
+        <button class="btn" @click="postImg()">发表</button>
       </div>
     </div>
     <div class="animated bounceInDown z_mask" v-if="removeTip">
@@ -71,67 +71,67 @@
             }
           })
       },
-      postTopic() {
-        let fileImg = document.getElementById("img").files
-        if(fileImg.length > 0) {
-          this.postImg()
-        }
-        let _this = this
-        if(this.isNeed) {
-          setTimeout(function () {
-            if(_this.postTitle == '' || this.categorySelected == '' || this.score == '') {
-              alert("标题、类别和赏金不能为空不能为空")
-            }
-            else {
-              let data = {
-                account: localStorage.getItem("account"),
-                category_id: _this.categorySelected,
-                image: _this.imgUrl,
-                post_content: _this.postContent,
-                post_title: _this.postTitle,
-                post_score: _this.score
+      postImg() {
+        let fileImgA = document.getElementById("img").files
+        if(fileImgA.length > 0) {
+          let fileImg = document.getElementById("img").files[0]
+          let formData = new FormData()
+          formData.append("img",fileImg)
+          this.axios.post(this.baseUrl2 + "/api/uploadImage",formData)
+            .then(res => {
+              if(status == 0) {
+                this.imgUrl = res.data.data.url
+                this.postTopic()
               }
-              _this.axios.post(_this.baseUrl + "/api/publishTie", data)
-                .then(res => {
-                  if(res.data.status == '0') {
-                    alert("发帖成功")
-                  }
-                  else {
-                    alert("发帖失败")
-                  }
-                })
-            }
-          },1000)
+            })
         }
         else {
-          setTimeout(function () {
-            if(_this.postTitle == '' || this.categorySelected == '') {
-              alert("标题和类别不能为空")
-            }
-            else {
-              _this.axios.get(_this.baseUrl1 + "/api/sendPost?post_title=" + _this.postTitle + "&post_content=" + _this.postContent + "&category_id=" + _this.categorySelected + "&account=6130116007&image=" + _this.imgUrl)
-                .then(res => {
-                  if(res.data.status == '1') {
-                    alert("发帖成功")
-                  }
-                  else {
-                    alert("发帖失败")
-                  }
-                })
-            }
-          },1000)
+          this.postImg()
         }
       },
-      postImg() {
-        let fileImg = document.getElementById("img").files[0]
-        let formData = new FormData()
-        formData.append("img",fileImg)
-        this.axios.post(this.baseUrl2 + "/api/uploadImage",formData)
-          .then(res => {
-            if(status == 0) {
-              this.imgUrl = res.data.data.url
+      postTopic() {
+        let _this = this
+        if(this.isNeed) {
+          if(_this.postTitle == '' || this.categorySelected == '' || this.score == '') {
+            alert("标题、类别和赏金不能为空不能为空")
+          }
+          else {
+            let data = {
+              account: localStorage.getItem("account"),
+              category_id: _this.categorySelected,
+              image: _this.imgUrl,
+              post_content: _this.postContent,
+              post_title: _this.postTitle,
+              post_score: _this.score
             }
-          })
+            _this.axios.post(_this.baseUrl + "/api/publishTie", data)
+              .then(res => {
+                if(res.data.status == '0') {
+                  alert("发帖成功")
+                }
+                else {
+                  alert("发帖失败")
+                }
+              })
+          }
+        }
+        else {
+          console.log(_this.imgUrl)
+          if(_this.postTitle == '' || this.categorySelected == '') {
+            alert("标题和类别不能为空")
+          }
+          else {
+            _this.axios.get(_this.baseUrl1 + "/api/sendPost?post_title=" + _this.postTitle + "&post_content=" + _this.postContent + "&category_id=" + _this.categorySelected + "&account=" + localStorage.getItem("account") +"&image=" + _this.imgUrl)
+              .then(res => {
+                if(res.data.status == '1') {
+                  alert("发帖成功")
+                }
+                else {
+                  alert("发帖失败")
+                }
+              })
+          }
+        }
       },
       showImg() {
         var imgContainer = document.getElementById("addImg");

@@ -2,41 +2,44 @@
   <div>
     <section class="container">
       <div class="header">
-        <h1>{{upTie.post_title}}</h1>
-        <div class="title_buttons">
-          <button @click="setGood()" v-if="type == 1">精华</button>
-          <button @click="setTop()" v-if="type == 1">置顶</button>
-          <button>修改</button>
-          <!--<button>删除</button>-->
-          <button>回复</button>
+        <h1>{{Title}}</h1>
+        <div class="title_buttons" v-if="unblank">
+          <button v-if="isAdmin">精华</button>
+          <button v-if="isAdmin">置顶</button>
+          <button v-if="isAdmin||isMine" @click="editPost()">修改</button>
+          <button v-if="isAdmin||isMine" @click="deletePost()">删除</button>
+          <button @click="letshow()">回复</button>
+          <button @click="re()">返回</button>
         </div>
       </div>
       <div class="content">
         <div class="content_left">
           <div class="content_avatar_wrapper">
-            <img src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
+            <img  @click="getSelfSpace(userId)" src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
           </div>
-          <span class="content_username">{{upTie.user_name}}</span>
+          <span class="content_username" @click="getSelfSpace(userId)">{{User}}</span>
         </div>
-        <div class="content_right">
+        <div class="content_right" >
           <div class="text">
-            {{upTie.post_content}}
+            {{postContent}}
+            <img :src="img" width="350px">
           </div>
-          <span>1楼 {{upTie.post_time}} <a href="#">回复</a></span>
+          <span><p class="special">1楼&nbsp;{{postTime}}</p>  </span>
         </div>
       </div>
-      <div class="content" v-for="item in SjTieAns">
+      <!--//后面的楼-->
+      <div class="content" v-for="(item,indexs) in nowGoodTie">
         <div class="content_left" v-for="(item3,index) in item" v-if="index == 0">
           <div class="content_avatar_wrapper">
             <img src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
           </div>
-          <span class="content_username">{{item3.user_name_1}}</span>
+          <span class="content_username" @click="getSelfSpace(item3.account)">{{item3.user_name_1}}</span>
         </div>
         <div class="content_right" v-for="(item1,index) in item" v-if="index == 0">
           <div class="text" v-if="item1.reply_id == '0' ">
             {{item1.reply_content}}
           </div>
-          <span>1楼 {{item1.reply_time}} <a href="#">回复</a></span>
+          <span>{{(goodNowIndex-1)*5+indexs+2}}楼 {{item1.reply_time}} <button class="b" @click="submitOther(item1.own_id)">回复</button></span>
           <div class="content_comment_wrapper" v-for="(item2,index) in item" v-if="index != 0">
             <div class="comment_item">
               <div class="comment_content">
@@ -44,32 +47,41 @@
                   <img src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
                 </div>
                 <div class="content_text_wrapper">
-                  <span class="username">{{item2.user_name_1}}</span>:
+                  <span class="username" @click="getSelfSpace(item2.account)">{{item2.user_name_1}}</span>:
                   <span class="text">回复{{item2.user_name_2}}:{{item2.reply_content}}</span>
                 </div>
               </div>
-              <span class="comment_status">2018-12-14 14:28 <a href="#">回复</a></span>
+              <span class="comment_status">{{item2.reply_time}} <button class="b" @click="submitOther(item2.own_id)">回复</button></span>
             </div>
           </div>
         </div>
       </div>
+
       <div class="pagination_wrapper">
-        <ul>
-          <li>上一页</li>
-          <li>1</li>
-          <li>下一页</li>
-        </ul>
+        <p style="text-align:left;margin:0 0 0px 500px">
+          <input class="btn btn1" @click="Pre()" type="submit" name="FaTie7" id="FaTie7" value="上一页">
+          <span v-for="(index) in goodTieGroup">
+            <span @click="toIndex(index)" v-if="goodTieGroup > 8"><a :class="[goodNowIndex == index ? 'current' : '']" v-if="index < 5 || index > (goodTieGroup - 4)">{{index}}&nbsp;</a><a v-if="index === goodTieGroup - 5">...</a></span>
+            <a @click="toIndex(index)" :class="[goodNowIndex == index ? 'current' : '']" v-if="goodTieGroup <= 8">{{index}}&nbsp;</a>
+          </span>
+          <span>跳转到</span><input v-model="goodHrefIndex" type="text" class="hrefInput" @keyup.enter="toIndex1()"/>页
+          <input class="btn btn1" @click="Next()" type="submit" name="FaTie10" id="FaTie10" value="下一页">
+        </p>
       </div>
-      <div class="add_comment">
-        <h1 class="headtext">发表回复</h1>
-        <div class="input_wrapper">
-          <div class="input_header">
-            <a href="#"><i class="fa fa-photo"></i>&nbsp;图片</a>
+
+      <div v-if="show" class="comment animated bounceInDown" id="login">
+        <img class="close1" src="../assets/img/close.png" @click="close()">
+        <div style="clear: both;"></div>
+        <div class="add_comment">
+          <h1 class="headtext">发表回复</h1>
+          <div class="input_wrapper">
+            <div class="input_header">
+            </div>
+            <textarea class="input_field" cols="16" v-model="ansContent"></textarea>
           </div>
-          <textarea class="input_field" cols="16"></textarea>
-        </div>
-        <div class="submit_wrapper">
-          <button class="btn">发表</button>
+          <div class="submit_wrapper">
+            <button class="btn" @click="submitAns()">发表</button>
+          </div>
         </div>
       </div>
     </section>
@@ -82,9 +94,42 @@
         type: 0,
         baseUrl1: "http://119.29.150.121:8080/BBS",
         baseUrl2: "http://120.79.211.126:8080/test/",
+        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
         topTieLength: 0,
-        SjTieAns: [],
-        upTie: ''
+        // SjTieAns: [],
+        upTie: '',
+        unblank:true,
+        isAdmin:false,
+        isMine:true,
+        //帖子标题
+        Title: '',
+        //楼主用户名
+        User: '',
+        //楼主账户
+        userId: '',
+        //一楼的内容
+        postContent: '',
+        //发帖时间
+        postTime:'',
+        //帖子的id
+        postId: '',
+        //所有回复
+        AllReply: [],
+        nowGoodTie: [],
+        goodTieLength: 0,
+        goodTieStart: 0,
+        goodTieEnd: -1,
+        goodTieGroup: 0,
+        goodNowIndex: 1,
+        goodHrefIndex: null,
+        //浏览者id
+        account:'',
+        //回复内容
+        ansContent:'',
+        //回复主贴id
+        replyIdOther: '0',
+        show:false,
+        img:''
       }
     },
     methods: {
@@ -129,42 +174,364 @@
             })
         }
       },
-      getTie() {
-        this.axios.get(this.baseUrl1 + "/api/getReplyInformationByPostID?post_id=" + this.$route.query.postId)
+      // getTie() {
+      //   this.axios.get(this.baseUrl1 + "/api/getReplyInformationByPostID?post_id=" + this.$route.query.postId)
+      //     .then(res => {
+      //       if(res.data.status == '1') {
+      //         this.SjTieAns = res.data.data.replyInformation
+      //         // this.ansNum = this.SjTieAns.length
+      //       }
+      //       else if(res.data.status == '-1') {
+      //         alert("当前帖子回复为空")
+      //       }
+      //       else {
+      //         alert("请求失败")
+      //       }
+      //     })
+      // },
+      // getUpTie() {
+      //   this.axios.get(this.baseUrl1 + "/api/getPostByPostId?post_id=" + this.$route.query.postId)
+      //     .then(res => {
+      //       if(res.data.status == '1') {
+      //         this.upTie = res.data.data
+      //       }
+      //       else {
+      //         alert("数据请求失败")
+      //       }
+      //     })
+      // },
+      deletePost(){
+        this.axios.get(this.baseUrl1+ "/api/deletePost?post_id="+this.postId)
           .then(res => {
-            if(res.data.status == '1') {
-              this.SjTieAns = res.data.data.replyInformation
-              // this.ansNum = this.SjTieAns.length
+            if(res.data.status=='1'){
+              alert("删帖成功")
+              this.$router.go(-1)
             }
-            else if(res.data.status == '-1') {
-              alert("当前帖子回复为空")
+            else{
+              alert("删帖失败")
             }
-            else {
-              alert("请求失败")
+          })
+
+      },
+      re(){
+        this.$router.go(-1)
+      },
+      close(){
+        this.show=false
+      },
+      letshow(){
+        this.show=true
+      },
+      getSelfSpace(id){
+        this.$router.push("/SelfSpace?Id=" + id)
+      },
+      submitOther(ownId){
+        this.show=true
+        this.replyIdOther = ownId
+      },
+      submitAns() {
+        this.account='111'
+        this.axios.get(this.baseUrl1 + "/api/replyAndSave?post_id=" + this.postId + "&account=" + this.account + "&reply_content=" + this.ansContent+ "&reply_id=" + this.replyIdOther +"&image=")
+          .then(res => {
+            console.log(2)
+            if(res.data.status != '1') {
+              console.log(3)
+              alert("回复失败")
+            }
+            this.show = false
+            this.replyIdOther = 0
+            console.log(4)
+          })
+        this.getTitle()
+        this.getReply()
+      },
+      //修改帖子
+      editPost(){
+        this.$router.push("/postTopic?Id=" + this.postId + "&" + "change=" + 1)
+      },
+      //判断身份
+      getStatus(){
+        if(localStorage.getItem("account")==this.userId){
+          this.isMine=true;
+        }
+        if(localStorage.getItem("type")==1)
+          this.isAdmin=true;
+      },
+      //获取帖子的基本信息（帖子id、楼主id和用户名）
+      getTitle() {
+        this.postId = this.$route.query.Id
+        this.axios.get(this.baseUrl1+ "/api/getPostByPostId?post_id="+this.postId)
+          .then(res => {
+            if(res.data.status!='1'){
+              this.unblank=false
+            }
+            if(res.data.data.category_id!='1005') {
+              this.userId = res.data.data.account;
+              this.postContent = res.data.data.post_content;
+              this.Title = res.data.data.post_title;
+              this.User = res.data.data.user_name;
+              this.postTime = res.data.data.post_time;
+              this.img=res.data.data.image;
             }
           })
       },
-      getUpTie() {
-        this.axios.get(this.baseUrl1 + "/api/getPostByPostId?post_id=" + this.$route.query.postId)
+      //获取帖子的回复
+      getReply() {
+        this.axios.get(this.baseUrl1 + "/api/getReplyInformationByPostID?post_id="+this.postId)
           .then(res => {
-            if(res.data.status == '1') {
-              this.upTie = res.data.data
+            this.AllReply=res.data.data.replyInformation;
+            this.goodTieLength = this.AllReply.length
+            if (this.goodTieLength >= 5)
+              this.goodTieEnd = 5
+            else
+              this.goodTieEnd = this.goodTieLength
+            this.nowGoodTie = this.AllReply.slice(this.goodTieStart,this.goodTieEnd)
+            if(this.goodTieLength % 5 === 0) {
+              this.goodTieGroup = parseInt(this.goodTieLength / 5)
             }
             else {
-              alert("数据请求失败")
+              this.goodTieGroup = parseInt(this.goodTieLength / 5) + 1
             }
           })
+      },
+      Pre() {
+        if(this.goodTieStart >= 5) {
+          this.goodNowIndex--
+          this.goodTieStart = this.goodTieStart - 5
+          this.goodTieEnd = this.goodTieEnd - 5
+          this.nowGoodTie = this.AllReply.slice(this.goodTieStart,this.goodTieEnd)
+        }
+      },
+      Next() {
+        if(this.goodTieEnd <= (this.goodTieLength - 1)) {
+          this.goodNowIndex++
+          this.goodTieStart = this.goodTieStart + 5
+          this.goodTieEnd = this.goodTieEnd + 5
+          if(this.goodTieStart <= (this.goodTieLength - 1)) {
+            this.nowGoodTie = this.AllReply.slice(this.goodTieStart,this.goodTieEnd)
+          }
+          else {
+            this.nowGoodTie = this.AllReply.slice(this.goodTieStart,this.goodTieLength)
+          }
+        }
+      },
+      toIndex1() {
+        if(this.goodHrefIndex >= this.goodTieGroup) {
+          this.goodNowIndex = this.goodTieGroup
+          this.goodTieStart = (this.goodTieGroup-1) * 5
+          this.goodTieEnd = this.goodTieStart + 5
+          this.nowGoodTie = this.AllReply.slice(this.goodTieStart,this.goodTieLength)
+        }
+        else {
+          this.goodNowIndex = this.goodHrefIndex
+          this.goodTieStart = (this.goodHrefIndex-1) * 5
+          this.goodTieEnd = this.goodTieStart + 5
+          this.nowGoodTie = this.AllReply.slice(this.goodTieStart,this.goodTieEnd)
+        }
+        this.goodHrefIndex = null
+      },
+      toIndex(index) {
+        this.goodNowIndex = index
+        this.goodTieStart = (this.goodNowIndex-1) * 5
+        this.goodTieEnd = this.goodTieStart + 5
+        this.nowGoodTie = this.AllReply.slice(this.goodTieStart,this.goodTieEnd)
       }
     },
     created() {
       this.getType()
       this.toGetTopTie()
-      this.getUpTie()
-      this.getTie()
+      this.getTitle();
+      this.getReply();
+      this.getStatus();
     }
   }
 </script>
 <style scoped>
+  a {
+    cursor: pointer;
+  }
+  .special{
+    color: gold;
+  }
+  .hrefInput {
+    margin:5px;
+    width: 18px;
+    height: 16px;
+    background-color: #fff;
+    color: #333;
+    text-align: center;
+    border: 1px #666 solid;
+    outline: none;
+  }
+  #login {
+    position: fixed;
+    left: 42%;
+    margin-left: -200px;
+    top: 100px;
+    text-align: center;
+    transition: all 0.7s ease-in-out;
+    z-index: 2;
+  }
+  @-webkit-keyframes bounceInDown {
+    from,
+    60%,
+    75%,
+    90%,
+    to {
+      -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    0% {
+      opacity: 0;
+      -webkit-transform: translate3d(0, -3000px, 0);
+      transform: translate3d(0, -3000px, 0);
+    }
+
+    60% {
+      opacity: 0.5;
+      -webkit-transform: translate3d(0, 25px, 0);
+      transform: translate3d(0, 25px, 0);
+    }
+
+    75% {
+      -webkit-transform: translate3d(0, -10px, 0);
+      transform: translate3d(0, -10px, 0);
+    }
+
+    90% {
+      opacity: 1;
+      -webkit-transform: translate3d(0, 5px, 0);
+      transform: translate3d(0, 5px, 0);
+    }
+
+    to {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes bounceInDown {
+    from,
+    60%,
+    75%,
+    90%,
+    to {
+      -webkit-animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    0% {
+      opacity: 0;
+      -webkit-transform: translate3d(0, -3000px, 0);
+      transform: translate3d(0, -3000px, 0);
+    }
+
+    60% {
+      opacity: 0.5;
+      -webkit-transform: translate3d(0, 25px, 0);
+      transform: translate3d(0, 25px, 0);
+    }
+
+    75% {
+      -webkit-transform: translate3d(0, -10px, 0);
+      transform: translate3d(0, -10px, 0);
+    }
+
+    90% {
+      opacity: 1;
+      -webkit-transform: translate3d(0, 5px, 0);
+      transform: translate3d(0, 5px, 0);
+    }
+
+    to {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .bounceInDown {
+    -webkit-animation-name: bounceInDown;
+    animation-name: bounceInDown;
+  }
+  .animated {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+  }
+
+  .animated.infinite {
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+  }
+
+  .animated.delay-1s {
+    -webkit-animation-delay: 1s;
+    animation-delay: 1s;
+  }
+
+  .animated.delay-2s {
+    -webkit-animation-delay: 2s;
+    animation-delay: 2s;
+  }
+
+  .animated.delay-3s {
+    -webkit-animation-delay: 3s;
+    animation-delay: 3s;
+  }
+
+  .animated.delay-4s {
+    -webkit-animation-delay: 4s;
+    animation-delay: 4s;
+  }
+
+  .animated.delay-5s {
+    -webkit-animation-delay: 5s;
+    animation-delay: 5s;
+  }
+
+  .animated.fast {
+    -webkit-animation-duration: 800ms;
+    animation-duration: 800ms;
+  }
+
+  .animated.faster {
+    -webkit-animation-duration: 500ms;
+    animation-duration: 500ms;
+  }
+
+  .animated.slow {
+    -webkit-animation-duration: 2s;
+    animation-duration: 2s;
+  }
+
+  .animated.slower {
+    -webkit-animation-duration: 3s;
+    animation-duration: 3s;
+  }
+  .close1 {
+    width: 25px;
+    height: 25px;
+    float: right;
+    margin-top: 20px;
+    margin-right: 20px;
+    cursor: pointer;
+    opacity: 0.7;
+  }
+  .close1:hover {
+    opacity: 1;
+  }
+  .comment{
+    margin: 0 auto;
+    background-color: #fff;
+    box-shadow: rgba(0,0,0,0.4) 0px 10px 20px;
+    border: none;
+  }
+  .b{
+    border: none;
+    background-color: white;
+  }
   .container {
     background-color: #f5f7fa;
     border: 1px solid #9cadc0;
@@ -229,6 +596,7 @@
     border: 1px solid #ccc;
     width: 96px;
     height: 96px;
+    cursor: pointer;
   }
   .content .content_left .content_username {
     display: inline-block;
@@ -241,6 +609,7 @@
     text-overflow: ellipsis;
     margin: 30px 0;
     text-align: center;
+    cursor: pointer;
   }
   .content .content_right {
     background-color: #fff;
@@ -314,6 +683,8 @@
     color: #333;
   }
   .container .add_comment {
+    width:650px;
+    height: 430px;
     padding: 30px;
     padding-top: 0;
   }
@@ -352,6 +723,11 @@
     display: flex;
     justify-content: flex-end;
   }
+  .btn1{
+    margin: 5px;
+    height: 23px;
+    padding: 0 0;
+  }
   .container .add_comment .submit_wrapper .btn {
     outline: none;
     border: none;
@@ -375,6 +751,7 @@
   }
   .container .pagination_wrapper {
     /*padding: 20px 0;*/
+    text-align: right;
     height: 64px;
     background: #f7f8fa;
     border-bottom: 1px solid #E5E5E5;

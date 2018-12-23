@@ -5,94 +5,131 @@
         <img src="../assets/img/1.jpg">
         <div class="title_contain">
           <div class="title_contain_top">
-            <span class="title_contain_follow"><i class="fa fa-database"></i>&nbsp100</span>
-            <span class="title_contain_letter"><i class="fa fa-comments"></i>私信</span>
-            <span class="title_contain_selfInfo"><i class="fa fa-id-card"></i>个人资料>></span>
+            <span class="title_contain_follow"><i class="fa fa-database"></i>&nbsp{{score}}</span>
+            <span class="title_contain_letter" @click="getLetters()"><i class="fa fa-comments"></i>私信</span>
+            <span class="title_contain_selfInfo" @click="getInfo()"><i class="fa fa-id-card"></i>个人资料>></span>
+            <span class="title_contain_last" @click="re()">&nbsp返回</span>
           </div>
-          <div class="name">小花不会说的货币</div>
+          <div class="name">{{name}}</div>
         </div>
       </div>
       <div class="bbs_content">
         <div class="bbs_content_title"><img src="../assets/img/tie.png"><span>帖子</span></div>
+
         <div class="all_bbs_message">
-          <div class="bbs_message">
-            <div class="bbs_message_top">
-              <img class="edit" src="../assets/img/edit.png">
-              <div class="bbs_message_title">可不可以不吃早餐啊啊啊</div>
-              <div class="bbs_message_time">2016-07-19</div>
+          <p v-if="havenoPost" class="p1">该用户还没有发过贴QAQ</p>
+          <ul><li v-for="(item,index) in post">
+            <div class="bbs_message">
+              <div class="bbs_message_top">
+                <img class="edit" src="../assets/img/edit.png">
+                <div class="bbs_message_title" @click="getPost(index)">{{item.post_title}}</div>
+                <div class="bbs_message_time">{{item.post_time}}</div>
+              </div>
+              <div class="bbs_message_detail">
+                <div class="text" @click="getPost()">{{item.post_content}}</div>
+
+              </div>
             </div>
-            <div class="bbs_message_detail">
-              <div class="text">不可以不吃早餐不可以不吃早餐不可以不吃早餐</div>
-              <img src="../assets/img/1.jpg">
-              <img src="../assets/img/2.jpg">
-            </div>
-          </div>
-          <div class="bbs_message">
-            <div class="bbs_message_top">
-              <img class="edit" src="../assets/img/edit.png">
-              <div class="bbs_message_title">可不可以不吃早餐啊啊啊</div>
-              <div class="bbs_message_time">2016-07-19</div>
-            </div>
-            <div class="bbs_message_detail">
-              <div class="text">不可以不吃早餐不可以不吃早餐不可以不吃早餐</div>
-              <img src="../assets/img/1.jpg">
-              <img src="../assets/img/2.jpg">
-            </div>
-          </div>
-          <div class="bbs_message">
-            <div class="bbs_message_top">
-              <img class="edit" src="../assets/img/edit.png">
-              <div class="bbs_message_title">可不可以不吃早餐啊啊啊</div>
-              <div class="bbs_message_time">2016-07-19</div>
-            </div>
-            <div class="bbs_message_detail">
-              <div class="text">不可以不吃早餐不可以不吃早餐不可以不吃早餐</div>
-              <img src="../assets/img/1.jpg">
-              <img src="../assets/img/2.jpg">
-            </div>
-          </div>
-          <div class="bbs_message">
-            <div class="bbs_message_top">
-              <img class="edit" src="../assets/img/edit.png">
-              <div class="bbs_message_title">可不可以不吃早餐啊啊啊</div>
-              <div class="bbs_message_time">2016-07-19</div>
-            </div>
-            <div class="bbs_message_detail">
-              <div class="text">不可以不吃早餐不可以不吃早餐不可以不吃早餐</div>
-              <img src="../assets/img/1.jpg">
-              <img src="../assets/img/2.jpg">
-            </div>
-          </div>
-          <div class="bbs_message">
-            <div class="bbs_message_top">
-              <img class="edit" src="../assets/img/edit.png">
-              <div class="bbs_message_title">可不可以不吃早餐啊啊啊</div>
-              <div class="bbs_message_time">2016-07-19</div>
-            </div>
-            <div class="bbs_message_detail">
-              <div class="text">不可以不吃早餐不可以不吃早餐不可以不吃早餐</div>
-              <img src="../assets/img/1.jpg">
-              <img src="../assets/img/2.jpg">
-            </div>
-          </div>
-          <div class="bbs_message">
-            <div class="bbs_message_top">
-              <img class="edit" src="../assets/img/edit.png">
-              <div class="bbs_message_title">可不可以不吃早餐啊啊啊</div>
-              <div class="bbs_message_time">2016-07-19</div>
-            </div>
-            <div class="bbs_message_detail">
-              <div class="text">不可以不吃早餐不可以不吃早餐不可以不吃早餐</div>
-              <img src="../assets/img/1.jpg">
-              <img src="../assets/img/2.jpg">
-            </div>
-          </div>
+          </li></ul>
         </div>
+
       </div>
     </div>
   </div>
 </template>
+<script>
+  export default {
+    data() {
+      return {
+        havenoPost:false,
+        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
+        baseUrl1: "http://119.29.150.121:8080/BBS",
+        //帖子信息
+        post: [],
+        //当前页面的用户id
+        account:'',
+        //积分
+        score:'',
+        //用户名
+        name:'',
+        //访客的id
+        mine: localStorage.getItem("account"),
+      }
+    },
+    methods: {
+      re(){
+        this.$router.go(-1)
+      },
+      //私信
+      getId(){
+        this.account=this.$route.query.Id
+      },
+      getLetters(){
+        this.$router.push("/letters");
+      },
+      //跳转到用户发的帖子中，并判断是否是需求帖
+      getPost(index){
+        if(this.post[index].category_id==1005){
+          this.$router.push({
+            path:'/ask',
+            query:{
+              Id:this.post[index].post_id},
+          })
+        }
+        else{
+          this.$router.push({
+            path:'/index',
+            query:{
+              Id:this.post[index].post_id},
+          })
+        }
+      },
+      //获取用户积分
+      getScore(){
+        this.axios.get(this.baseUrl1 + "/api/getUserInformationByAccount?account="+this.account)
+          .then(res => {
+            this.score = res.data.data.score;
+            this.name=res.data.data.user_name;
+          })
+
+      },
+      //个人资料
+      getInfo(){
+        this.$router.push("/SelfMessage?account=" +this.account)
+      },
+      //获取用户发过的帖子
+      getMessage() {
+        this.axios.get(this.baseUrl1 + "/api/getPostByAccount?account="+this.account)
+          .then(res => {
+            if (res.data.status == '1') {
+              this.post = res.data.data.posts;
+            }
+            else {
+              this.havenoPost=true
+            }
+          })
+      }
+    },
+    created() {
+      this.getId();
+      this.getMessage();
+      this.getScore();
+    }
+  }
+</script>
 <style scoped>
+  a {
+    cursor: pointer;
+  }
+  .p1{
+    text-align: center;
+    font-size: 18px;
+    padding: 15px;
+    color: darkgray;
+  }
+  li{
+    list-style: none;
+  }
   .content {
     width: 50%;
     height: 100%;
@@ -159,6 +196,20 @@
     margin-top: -13px;
     left: 0;
     background-color: #e64545;
+    text-align: center;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .content .title .title_contain .title_contain_top .title_contain_last {
+    width: 50px;
+    line-height: 26px;
+    position: absolute;
+    margin-right: 5px;
+    top: 50%;
+    margin-top: -13px;
+    left: 600px;
+    background-color: darkgray;
     text-align: center;
     color: #fff;
     font-size: 13px;
@@ -264,6 +315,7 @@
     left: 35px;
     color: rgb(63,137,236);
     font-weight: bold;
+    cursor: pointer;
   }
   .bbs_content .all_bbs_message .bbs_message .bbs_message_top .bbs_message_time {
     width: 100px;

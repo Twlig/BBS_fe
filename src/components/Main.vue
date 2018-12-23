@@ -13,7 +13,7 @@
         <!-- end .header --></div>
       <div class="sidebar1">
         <ul class="nav">
-          <li v-for="item in category"><a href="#" class="ZiTi">{{item.category_name}}</a></li>
+          <li v-if="index != categoryLength - 1" v-for="(item,index) in category" @click="categoryT(item.category_id)"><a href="#" class="ZiTi">{{item.category_name}}</a></li>
         </ul>
       </div>
       <div class="content">
@@ -57,7 +57,7 @@
         <!--普通贴 -->
         <div v-if="usualTieLength > 0">
           <hr size="10">
-          <p @click="toTieDetail(item.post_id)" v-for="item in nowusualTie"><button class="bt1">话题</button><a class="TieZiZT">{{item.post_title}}</a></p>
+          <p @click="toTieDetail(item.post_id)" v-for="item in nowusualTie"><button v-if="item.is_refinement == 0" class="bt1">话题</button><button v-if="item.is_refinement == 1" class="bt2">精</button><a class="TieZiZT">{{item.post_title}}</a></p>
           <p style="text-align:left;">
             <input @click="usualPre()" type="submit" name="FaTie9" id="FaTie9" value="上一页">
             <span v-for="(index) in usualTieGroup">
@@ -73,7 +73,7 @@
       <div class="sidebar2">
         <div v-if="isLogin">
           <a href="#"><img src="../assets/img/head.png"name="User_logo" width="60" height="60" id="User_logo" style="margin:auto; display:block;" /></a>
-          <a href="#" style="font-size: 13px"> 个人空间>></a>
+          <a @click="toSelfSpace()" style="font-size: 13px"> 个人空间>></a>
         </div>
         <div @click="tologin()" class="login" v-if="!isLogin">
           没登录，去登录>>
@@ -87,6 +87,13 @@
     <div class="ad">
       <div class="ad_title">广告位招租</div>
       <banner :listImg="bannerList"></banner>
+    </div>
+    <div class="hotTie">
+      <div class="title">热帖榜</div>
+      <div @click="toTieDetail(item.post_id)" class="hot_item" v-for="item in hotTie">
+        <img src="../assets/img/hot.png">
+        <span>{{item.post_title}}&nbsp;&nbsp;{{item.number}}&nbsp;<i class="fa fa-fire"></i></span>
+      </div>
     </div>
     <div v-if="showModal" id="modal">
     </div>
@@ -165,10 +172,10 @@ export default {
       isRegister: false,
       isAlert: false,
       bannerList: [
-        {"type":"1","img":"../../static/img/1.jpg","url":""},
-        {"type":"1","img":"../../static/img/1.jpg","url":""},
-        {"type":"1","img":"../../static/img/1.jpg","url":""},
-        {"type":"1","img":"../../static/img/1.jpg","url":""}
+        {"type":"1","img":"../../static/img/guang1.png","url":""},
+        {"type":"1","img":"../../static/img/guang2.png","url":""},
+        {"type":"1","img":"../../static/img/guang3.png","url":""},
+        {"type":"1","img":"../../static/img/guang4.png","url":""}
       ],
       account: '',
       username: '',
@@ -185,32 +192,34 @@ export default {
       accountLogin: '',
       passwordLogin: '',
       category: [],
+      categoryLength: 0,
       message: '',
       goodTie: [],
       nowGoodTie: [],
       goodTieLength: 0,
       goodTieStart: 0,
-      goodTieEnd: 3,
-      goodTieGroup: 9,
+      goodTieEnd: -1,
+      goodTieGroup: 0,
       goodNowIndex: 1,
       goodHrefIndex: null,
       scoreTie: [],
       nowScoreTie: [],
       scoreTieLength: 0,
       scoreTieStart: 0,
-      scoreTieEnd: 3,
-      scoreTieGroup: 9,
+      scoreTieEnd: -1,
+      scoreTieGroup: 0,
       scoreNowIndex: 1,
       scoreHrefIndex: null,
       usualTie: [],
       nowusualTie: [],
       usualTieLength: 0,
       usualTieStart: 0,
-      usualTieEnd: 3,
-      usualTieGroup: 9,
+      usualTieEnd: -1,
+      usualTieGroup: 0,
       nowIndex: 1,
       hrefIndex: null,
-      topTie: []
+      topTie: [],
+      hotTie: []
     }
   },
   methods: {
@@ -219,23 +228,16 @@ export default {
         .then(res => {
           if (res.data.status == '1') {
             this.category = res.data.data.categories
+            this.categoryLength = this.category.length
           }
           else {
             alert("信息请求失败")
           }
         })
     },
-    // getScore() {
-    //   this.axios.get(this.baseUrl + "/api/getScoreTie")
-    //     .then(res => {
-    //       if(res.data.status == '0') {
-    //         this.scoreTie = res.data.data
-    //       }
-    //       else {
-    //         alert("请求失败")
-    //       }
-    //     })
-    // },
+    toSelfSpace() {
+      this.$router.push("/selfSpace?Id=" + localStorage.getItem("account"))
+    },
     tologin() {
       this.showModal = true
       this.isLoginT = true
@@ -323,33 +325,120 @@ export default {
       }
     },
     toTieDetail(postId) {
-      this.$router.push("/index?postId=" + postId)
+      this.$router.push("/index?Id=" + postId)
+    },
+    categoryT(categoryId) {
+      this.axios.get(this.baseUrl2 + "getPostByCategory?category_id=" + categoryId)
+        .then(res => {
+          if (res.data.status == '1') {
+            this.usualTie = res.data.data.PostByCategory
+            this.usualTieLength = this.usualTie.length
+            this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
+            if(this.usualTieLength % 3 === 0) {
+              this.usualTieGroup = parseInt(this.usualTieLength / 3)
+            }
+            else {
+              this.usualTieGroup = parseInt(this.usualTieLength / 3) + 1
+            }
+          }
+          else {
+            this.usualTie = []
+            this.usualTieLength = 0
+            this.nowusualTie = []
+            this.usualTieGroup = 0
+            this.usualTieEnd = -1
+            this.usualTieStart = 0
+            if (res.data.status == '0') {
+              alert("当前分类普通贴为空")
+            }
+            else {
+              alert("请求失败")
+            }
+          }
+        })
+      this.axios.get(this.baseUrl2 + "getEditingPostByCategory?category_id=" + categoryId)
+        .then(res => {
+          if(res.data.status == '1') {
+            this.goodTie = res.data.data.EditingPostByCategory
+            this.goodTieLength = this.goodTie.length
+            this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieEnd)
+            if(this.goodTieLength % 3 === 0) {
+              this.goodTieGroup = parseInt(this.goodTieLength / 3)
+            }
+            else {
+              this.goodTieGroup = parseInt(this.goodTieLength / 3) + 1
+            }
+          }
+          else {
+            this.goodTie = []
+            this.goodTieLength = 0
+            this.nowGoodTie = []
+            this.goodTieGroup = 0
+            this.goodTieStart = 0
+            this.scoreTieEnd = -1
+            if (res.data.status == '0') {
+              alert("当前分类加精贴为空")
+            }
+            else {
+              alert("请求失败")
+            }
+          }
+        })
+    },
+    toGetHotTie() {
+      this.axios.get(this.baseUrl1 + "/api/getPostStatisticsByReplyNum")
+        .then(res => {
+          if (res.data.status == '1') {
+            this.hotTie = res.data.data
+          }
+          else {
+            alert("请求热帖失败")
+          }
+        })
     },
     toGetUsualTie() {
       this.axios.get(this.baseUrl2 + "getPost")
         .then(res => {
-          this.usualTie = res.data.data.posts
-          this.usualTieLength = this.usualTie.length
-          this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
-          if(this.usualTieLength % 3 === 0) {
-            this.usualTieGroup = parseInt(this.usualTieLength / 3)
+          if (res.data.status == '1') {
+            this.usualTie = res.data.data.posts
+            this.usualTieLength = this.usualTie.length
+            if (this.usualTieLength >= 3)
+              this.usualTieEnd = 3
+            else
+              this.usualTieEnd = this.usualTieLength
+            this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
+            if(this.usualTieLength % 3 === 0) {
+              this.usualTieGroup = parseInt(this.usualTieLength / 3)
+            }
+            else {
+              this.usualTieGroup = parseInt(this.usualTieLength / 3) + 1
+            }
           }
           else {
-            this.usualTieGroup = parseInt(this.usualTieLength / 3) + 1
+            alert("请求失败")
           }
         })
     },
     toGetScoreTie() {
       this.axios.get(this.baseUrl + "/api/getScoreTie")
         .then(res => {
-          this.scoreTie = res.data.data
-          this.scoreTieLength = this.scoreTie.length
-          this.nowScoreTie = this.scoreTie.slice(this.scoreTieStart,this.scoreTieEnd)
-          if(this.scoreTieLength % 3 === 0) {
-            this.scoreTieGroup = parseInt(this.scoreTieLength / 3)
+          if (res.data.status == '0') {
+            this.scoreTie = res.data.data
+            this.scoreTieLength = this.scoreTie.length
+            if (this.scoreTieLength >= 3)
+              this.scoreTieEnd = 3
+            else
+              this.scoreTieEnd = this.scoreTieLength
+            this.nowScoreTie = this.scoreTie.slice(this.scoreTieStart,this.scoreTieEnd)
+            if(this.scoreTieLength % 3 === 0) {
+              this.scoreTieGroup = parseInt(this.scoreTieLength / 3)
+            }
+            else {
+              this.scoreTieGroup = parseInt(this.scoreTieLength / 3) + 1
+            }
           }
           else {
-            this.scoreTieGroup = parseInt(this.scoreTieLength / 3) + 1
+            alert("请求失败")
           }
         })
     },
@@ -359,6 +448,10 @@ export default {
           if(res.data.status == '1') {
             this.goodTie = res.data.data.posts
             this.goodTieLength = this.goodTie.length
+            if (this.goodTieLength >= 3)
+              this.goodTieEnd = 3
+            else
+              this.goodTieEnd = this.goodTieLength
             this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieEnd)
             if(this.goodTieLength % 3 === 0) {
               this.goodTieGroup = parseInt(this.goodTieLength / 3)
@@ -573,6 +666,7 @@ export default {
     this.toGetScoreTie()
     this.toGetGoodTie()
     this.toGetTopTie()
+    this.toGetHotTie()
   }
 }
 </script>
@@ -603,7 +697,45 @@ export default {
     text-decoration: none;
     color: #414958;
     cursor: pointer;
-     }
+  }
+  .hotTie {
+    width: 300px;
+    text-align: left;
+    font-size: 14px;
+    color: #333;
+    position: absolute;
+    right: 20px;
+    top: 50px;
+    border: 1px #333 solid;
+    box-sizing: border-box;
+    padding-left: 10px;
+    padding-top: 10px;
+  }
+  .hotTie .title {
+    width: 100%;
+    font-size: 16px;
+    text-align: left;
+    margin: 0;
+    color: #E4393C !important;
+  }
+  .hotTie .hot_item {
+    width: 100%;
+    text-align: center;
+    position: relative;
+    margin-bottom: 10px;
+    text-align: left;
+    text-overflow: clip;
+  }
+  .hotTie .hot_item img {
+    width: 15px;
+    height: 15px;
+  }
+  .hotTie .hot_item span {
+    margin-left: 10px;
+  }
+  .hotTie .hot_item:hover {
+    text-decoration: underline;
+  }
   .hrefInput {
     width: 18px;
     height: 18px;
@@ -652,11 +784,11 @@ export default {
   }
   .ad {
     position: fixed;
-    right: 25%;
-    margin-right: -350px;
+    left: 25%;
+    margin-left: -280px;
     top: 50px;
-    width: 300px;
-    height: 600px;
+    width: 200px;
+    height: 400px;
   }
   .ad_title {
     width: 100%;

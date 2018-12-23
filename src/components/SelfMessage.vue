@@ -5,6 +5,7 @@
         <img src="../assets/img/1.jpg">
         <div class="title_contain">
           <div class="title_contain_top">
+            <span class="title_contain_follow" @click="re()">&nbsp返回</span>
           </div>
           <div class="name">{{message.user_name}}</div>
         </div>
@@ -27,7 +28,7 @@
               <div class="bbs_message_title">出生日期</div>
             </div>
             <div class="bbs_message_detail">
-              {{message.birthdat}}
+              {{message.birthday}}
             </div>
           </div>
           <div class="bbs_message">
@@ -66,23 +67,27 @@
   export default {
     data() {
       return {
-        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
         baseUrl1: "http://119.29.150.121:8080/BBS",
-        message: ''
+        message: '',
+
       }
     },
     methods: {
+      re(){
+        this.$router.go(-1)
+      },
       getMessage() {
-        this.axios.get(this.baseUrl1 + "/api/getUserInformationByAccount?account=6130116007")
+        this.axios.get(this.baseUrl1 + "/api/getUserInformationByAccount?account="+this.$route.query.account)
           .then(res => {
             this.message = res.data.data
           })
-      },
+      }
     },
     created() {
       this.getMessage()
     }
   }
+
 </script>
 <style scoped>
   .content {
@@ -142,7 +147,20 @@
     bottom: 0;
     left: 0;
   }
-
+  .content .title .title_contain .title_contain_top .title_contain_follow {
+    width: 50px;
+    line-height: 26px;
+    position: absolute;
+    margin-right: 5px;
+    top: 50%;
+    margin-top: -13px;
+    left: 600px;
+    background-color: rgba(63,137,236,0.5);
+    text-align: center;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+  }
   .content .title .title_contain .name {
     padding: 0 10px;
     line-height: 30px;

@@ -120,7 +120,7 @@
       <div class="title">注册</div>
       <div class="input_div">
         <img src="../assets/img/user.png">
-        <input placeholder="账户" id="user1" v-model="account"/>
+        <input placeholder="账户：只能数字组合" id="user1" v-model="account"/>
       </div>
       <div class="input_div">
         <img src="../assets/img/password.png">
@@ -280,6 +280,9 @@ export default {
               .then(res => {
                 if (res.data.status == '0') {
                   this.username = this.account = this.password = this.age = this.occupation = this.place = this.sex = this.tel = this.passwordAgain = ''
+                  this.isRegister = false
+                  this.showModal = false
+                  this.isLoginT = false
                   alert("注册成功")
                 }
                 else {
@@ -297,10 +300,10 @@ export default {
       }
     },
     login() {
+      let _this = this
       if(this.accountLogin == '' || this.passwordLogin == '') {
         this.message = "字段不能为空"
         this.isAlert = true
-        let _this = this
         setTimeout(function () {
           _this.isAlert = false
         },1500)
@@ -315,18 +318,17 @@ export default {
             if(res.data.status != '0') {
               this.message = "登录失败"
               this.isAlert = true
-              let _this = this
               setTimeout(function () {
                 _this.isAlert = false
               },1500)
             }
             else {
-              this.accountLogin = this.passwordLogin = ''
               this.isLogin = true
               this.isLoginT = false
               this.showModal = false
-              localStorage.setItem("account",this.accountLogin)
+              localStorage.setItem("account",_this.accountLogin)
               localStorage.setItem("type",res.data.data.type)
+              this.accountLogin = this.passwordLogin = ''
             }
           })
       }

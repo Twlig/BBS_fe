@@ -94,12 +94,12 @@
         this.axios.get(this.baseUrl1 + "/api/getUsersOfCommunication?account=" + localStorage.getItem("account"))
           .then(res => {
             let users = []
-            for(let i = 0; i < users.length; i++) {
-              if (this.nowTalkUser.account != users[i].account) {
+            for(let i = 0; i < res.data.data.users.length; i++) {
+              if (this.nowTalkUser.account != res.data.data.users[i].account) {
                 users.push(res.data.data.users[i])
               }
             }
-
+            this.users = users
           })
       },
       showMessage(account,name) {

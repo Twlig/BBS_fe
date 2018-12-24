@@ -100,7 +100,7 @@
         upTie: '',
         unblank:true,
         isAdmin:false,
-        isMine:true,
+        isMine:false,
         //帖子标题
         Title: '',
         //楼主用户名

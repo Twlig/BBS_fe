@@ -65,7 +65,7 @@
         this.account=this.$route.query.Id
       },
       getLetters(){
-        this.$router.push("/letters");
+        this.$router.push("/letters?account=" + this.account);
       },
       //跳转到用户发的帖子中，并判断是否是需求帖
       getPost(index){
@@ -73,7 +73,7 @@
           this.$router.push({
             path:'/ask',
             query:{
-              Id:this.post[index].post_id},
+              postId:this.post[index].post_id},
           })
         }
         else{

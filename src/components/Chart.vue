@@ -17,6 +17,11 @@
       <button @click="changeType2">切换图表类型</button>
       <ve-chart width="500px" class="size" :data="chartData2" :settings="chartSettings2"></ve-chart>
     </div>
+    <div class="show">
+      <div class="title">各类帖子类别统计</div>
+      <button @click="changeType3">切换图表类型</button>
+      <ve-chart width="500px" class="size" :data="chartData3" :settings="chartSettings3"></ve-chart>
+    </div>
   </div>
   </div>
 </template>
@@ -29,6 +34,8 @@
       this.typeArr = ['line', 'histogram', 'pie']
       this.typeArr1 = ['line', 'histogram', 'pie']
       this.typeArr2 = ['line', 'histogram', 'pie']
+      this.typeArr3 = ['line', 'histogram', 'pie']
+      this.index3 = 0
       this.index2 = 0
       this.index1 = 0
       this.index = 0
@@ -45,9 +52,14 @@
           columns: ['年代','人数'],
           rows: []
         },
+        chartData3: {
+          columns: ['类别','数量'],
+          rows: []
+        },
         chartSettings: {type: this.typeArr[this.index]},
         chartSettings1: {type: this.typeArr1[this.index1]},
         chartSettings2: {type: this.typeArr2[this.index2]},
+        chartSettings3: {type: this.typeArr3[this.index3]},
         baseUrl1: "http://119.29.150.121:8080/BBS"
       }
     },
@@ -66,6 +78,11 @@
         this.index2++
         if (this.index2 >= this.typeArr2.length) { this.index2 = 0 }
         this.chartSettings2 = { type: this.typeArr2[this.index2] }
+      },
+      changeType3: function () {
+        this.index3++
+        if (this.index3 >= this.typeArr3.length) { this.index3 = 0 }
+        this.chartSettings3 = { type: this.typeArr3[this.index3] }
       },
       getSex() {
         this.axios.get(this.baseUrl1 + "/api/getUserStatisticsBySex")
@@ -90,6 +107,14 @@
               this.chartData2.rows = res.data.data
             }
           })
+      },
+      getCategoryId() {
+        this.axios.get(this.baseUrl1 + "/api/getCategoryStatisticsByPostNum")
+          .then(res => {
+            if (res.data.status == '1') {
+              this.chartData3.rows = res.data.data
+            }
+          })
       }
     },
     components: {
@@ -100,6 +125,7 @@
       this.getPro()
       this.getSex()
       this.getAge()
+      this.getCategoryId()
     }
     //   let _this = this
     //  setInterval(function () {

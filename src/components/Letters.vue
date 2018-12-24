@@ -12,6 +12,10 @@
           </div>
         </div>
         <div class="allMessage">
+          <div v-if="nowTalkUser.account != userAccount" @click="showMessage(nowTalkUser.account,nowTalkUser.user_name)" class="message1">
+            <img src="../assets/img/1.jpg">
+            <span class="name">{{nowTalkUser.user_name}}</span>
+          </div>
           <div @click="showMessage(item.account,item.user_name)" class="message1" v-for="item in users">
             <img src="../assets/img/1.jpg">
             <span class="name">{{item.user_name}}</span>
@@ -20,23 +24,23 @@
       </div>
       <div id="right">
         <div class="title">
-          <img src="../assets/img/close.png">
+          <img @click="re()" src="../assets/img/back1.png" style="margin-right: 10px">
         </div>
         <div class="content">
-          <div v-if="isUser">
+          <div>
             <div class="withWho">正在与{{talkUser}}交谈</div>
             <div class="talkedContent">
               <div v-for="item in talkMessage">
                 <div v-if="item.account_send == talkAccount" class="other">
                   <div class="avatar_wrapper">
-                    <img src="../assets/img/1.jpg">
+                    <img @click="toSpace(talkAccount)" src="../assets/img/1.jpg">
                   </div>
                   <div class="content_container">{{item.message_content}}</div>
                 </div>
                 <div v-if="item.account_send == userAccount" class="me">
                   <div class="content_container">{{item.message_content}}</div>
                   <div class="avatar_wrapper">
-                    <img src="../assets/img/2.jpg">
+                    <img @click="toSpace(userAccount)" src="../assets/img/2.jpg">
                   </div>
                 </div>
               </div>
@@ -56,19 +60,46 @@
       return {
         baseUrl1: "http://119.29.150.121:8080/BBS",
         users: [],
-        userAccount: '6130116007',
+        userAccount: '',
         isUser: false,
         talkUser: '',
         talkAccount: '',
         talkMessage: [],
-        contentMessage: ''
+        contentMessage: '',
+        nowTalkUser: ''
       }
     },
     methods: {
-      getUser() {
-        this.axios.get(this.baseUrl1 + "/api/getUsersOfCommunication?account=" + "6130116007")
+      re(){
+        this.$router.go(-1)
+      },
+      toSpace(account) {
+        this.$router.push("/selfSpace?Id=" + account)
+      },
+      getUntalkUser() {
+        this.axios.get(this.baseUrl1 + "/api/getUserInformationByAccount?account=" + this.$route.query.account)
           .then(res => {
-            this.users = res.data.data.users
+            if (res.data.status == '1') {
+              this.nowTalkUser = res.data.data
+              this.nowTalkUser.account = this.$route.query.account
+              this.getUser()
+            } 
+            else {
+              alert("获取信息失败")
+            }
+          })
+      },
+      getUser() {
+        this.userAccount = localStorage.getItem("account")
+        this.axios.get(this.baseUrl1 + "/api/getUsersOfCommunication?account=" + localStorage.getItem("account"))
+          .then(res => {
+            let users = []
+            for(let i = 0; i < users.length; i++) {
+              if (this.nowTalkUser.account != users[i].account) {
+                users.push(res.data.data.users[i])
+              }
+            }
+
           })
       },
       showMessage(account,name) {
@@ -78,7 +109,7 @@
         this.axios.get(_this.baseUrl1 + "/api/showConversation?account_1="+ _this.userAccount + "&account_2=" + account)
           .then(res => {
             if(res.data.status == '1') {
-              _this.isUser = true
+              // _this.isUser = true
               _this.talkMessage = res.data.data
             }
           })
@@ -102,7 +133,7 @@
       }
     },
     created() {
-      this.getUser()
+      this.getUntalkUser()
     }
   }
 </script>

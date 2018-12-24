@@ -8,6 +8,7 @@ import PostTopic from '@/components/PostTopic'
 import SelfMessage from '@/components/SelfMessage'
 import SelfSpace from '@/components/SelfSpace'
 import Chart from '@/components/Chart'
+import Edit from '@/components/Edit'
 Vue.use(Router)
 
 export default new Router({
@@ -51,6 +52,11 @@ export default new Router({
       path: '/chart',
       name: 'Chart',
       component: Chart
+    },
+    {
+      path: '/edit',
+      name: 'Edit',
+      component: Edit
     }
   ]
 })

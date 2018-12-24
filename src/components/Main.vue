@@ -13,7 +13,8 @@
         <!-- end .header --></div>
       <div class="sidebar1">
         <ul class="nav">
-          <li v-if="index != categoryLength - 1" v-for="(item,index) in category" @click="categoryT(item.category_id)"><a href="#" class="ZiTi">{{item.category_name}}</a></li>
+          <li @click="categoryT('')"><a class="ZiTi">全部</a></li>
+          <li v-if="index != categoryLength - 1" v-for="(item,index) in category" @click="categoryT(item.category_id)"><a class="ZiTi">{{item.category_name}}</a></li>
         </ul>
       </div>
       <div class="content">
@@ -74,6 +75,7 @@
         <div v-if="isLogin">
           <a href="#"><img src="../assets/img/head.png"name="User_logo" width="60" height="60" id="User_logo" style="margin:auto; display:block;" /></a>
           <a @click="toSelfSpace()" style="font-size: 13px"> 个人空间>></a>
+          <div style="font-size: 13px;margin-top: 5px" @click="logOut()"><i class="fa fa-sign-out"></i><a>&nbsp;退出登录</a></div>
         </div>
         <div @click="tologin()" class="login" v-if="!isLogin">
           没登录，去登录>>
@@ -90,7 +92,7 @@
     </div>
     <div class="hotTie">
       <div class="title">热帖榜</div>
-      <div @click="toTieDetail(item.post_id)" class="hot_item" v-for="item in hotTie">
+      <div @click="toTieDetail(item.post_id,item.category_id)" class="hot_item" v-for="item in hotTie">
         <img src="../assets/img/hot.png">
         <span>{{item.post_title}}&nbsp;&nbsp;{{item.number}}&nbsp;<i class="fa fa-fire"></i></span>
       </div>
@@ -107,7 +109,7 @@
         </div>
         <div class="input_div">
           <img src="../assets/img/password.png">
-          <input placeholder="密码" id="password" v-model="passwordLogin"/>
+          <input placeholder="密码" id="password" type="password" v-model="passwordLogin"/>
         </div>
         <button class="submit" @click="login()">登录</button>
         <div class="register" @click="toregister()">没账号，现在去注册</div>
@@ -219,7 +221,8 @@ export default {
       nowIndex: 1,
       hrefIndex: null,
       topTie: [],
-      hotTie: []
+      hotTie: [],
+      categoryId: ''
     }
   },
   methods: {
@@ -234,6 +237,10 @@ export default {
             alert("信息请求失败")
           }
         })
+    },
+    logOut() {
+      localStorage.removeItem("account")
+      this.isLogin = false
     },
     toSelfSpace() {
       this.$router.push("/selfSpace?Id=" + localStorage.getItem("account"))
@@ -271,6 +278,13 @@ export default {
             }
             this.axios.post(this.baseUrl + "/api/register",data)
               .then(res => {
+                if (res.data.status == '0') {
+                  this.username = this.account = this.password = this.age = this.occupation = this.place = this.sex = this.tel = this.passwordAgain = ''
+                  alert("注册成功")
+                }
+                else {
+                  alert(res.data.message)
+                }
               })
           }
           else {
@@ -307,6 +321,7 @@ export default {
               },1500)
             }
             else {
+              this.accountLogin = this.passwordLogin = ''
               this.isLogin = true
               this.isLoginT = false
               this.showModal = false
@@ -324,66 +339,18 @@ export default {
         this.tologin()
       }
     },
-    toTieDetail(postId) {
-      this.$router.push("/index?Id=" + postId)
+    toTieDetail(postId,categoryId) {
+      if (categoryId == '1005') {
+        this.$router.push("/ask?postId=" + postId)
+      }
+      else {
+        this.$router.push("/index?Id=" + postId)
+      }
     },
     categoryT(categoryId) {
-      this.axios.get(this.baseUrl2 + "getPostByCategory?category_id=" + categoryId)
-        .then(res => {
-          if (res.data.status == '1') {
-            this.usualTie = res.data.data.PostByCategory
-            this.usualTieLength = this.usualTie.length
-            this.nowusualTie = this.usualTie.slice(this.usualTieStart,this.usualTieEnd)
-            if(this.usualTieLength % 3 === 0) {
-              this.usualTieGroup = parseInt(this.usualTieLength / 3)
-            }
-            else {
-              this.usualTieGroup = parseInt(this.usualTieLength / 3) + 1
-            }
-          }
-          else {
-            this.usualTie = []
-            this.usualTieLength = 0
-            this.nowusualTie = []
-            this.usualTieGroup = 0
-            this.usualTieEnd = -1
-            this.usualTieStart = 0
-            if (res.data.status == '0') {
-              alert("当前分类普通贴为空")
-            }
-            else {
-              alert("请求失败")
-            }
-          }
-        })
-      this.axios.get(this.baseUrl2 + "getEditingPostByCategory?category_id=" + categoryId)
-        .then(res => {
-          if(res.data.status == '1') {
-            this.goodTie = res.data.data.EditingPostByCategory
-            this.goodTieLength = this.goodTie.length
-            this.nowGoodTie = this.goodTie.slice(this.goodTieStart,this.goodTieEnd)
-            if(this.goodTieLength % 3 === 0) {
-              this.goodTieGroup = parseInt(this.goodTieLength / 3)
-            }
-            else {
-              this.goodTieGroup = parseInt(this.goodTieLength / 3) + 1
-            }
-          }
-          else {
-            this.goodTie = []
-            this.goodTieLength = 0
-            this.nowGoodTie = []
-            this.goodTieGroup = 0
-            this.goodTieStart = 0
-            this.scoreTieEnd = -1
-            if (res.data.status == '0') {
-              alert("当前分类加精贴为空")
-            }
-            else {
-              alert("请求失败")
-            }
-          }
-        })
+      this.categoryId = categoryId
+      this.toGetUsualTie()
+      this.toGetGoodTie()
     },
     toGetHotTie() {
       this.axios.get(this.baseUrl1 + "/api/getPostStatisticsByReplyNum")
@@ -397,7 +364,7 @@ export default {
         })
     },
     toGetUsualTie() {
-      this.axios.get(this.baseUrl2 + "getPost")
+      this.axios.get(this.baseUrl2 + "getPost?category_id=" + this.categoryId)
         .then(res => {
           if (res.data.status == '1') {
             this.usualTie = res.data.data.posts
@@ -413,6 +380,9 @@ export default {
             else {
               this.usualTieGroup = parseInt(this.usualTieLength / 3) + 1
             }
+          }
+          else if (res.data.status == '2') {
+            alert("贴子为空")
           }
           else {
             alert("请求失败")
@@ -443,7 +413,7 @@ export default {
         })
     },
     toGetGoodTie() {
-      this.axios.get(this.baseUrl2 + "getEditingPost")
+      this.axios.get(this.baseUrl2 + "getEditingPost?category_id=" + this.categoryId)
         .then(res => {
           if(res.data.status == '1') {
             this.goodTie = res.data.data.posts
@@ -459,6 +429,9 @@ export default {
             else {
               this.goodTieGroup = parseInt(this.goodTieLength / 3) + 1
             }
+          }
+          else if(res.data.status == '2') {
+            alert("帖子为空")
           }
           else {
             alert("获取加精信息失败")
@@ -710,6 +683,7 @@ export default {
     box-sizing: border-box;
     padding-left: 10px;
     padding-top: 10px;
+    background-color: rgba(255,137,107,0.1);
   }
   .hotTie .title {
     width: 100%;
@@ -732,6 +706,7 @@ export default {
   }
   .hotTie .hot_item span {
     margin-left: 10px;
+    cursor: pointer;
   }
   .hotTie .hot_item:hover {
     text-decoration: underline;

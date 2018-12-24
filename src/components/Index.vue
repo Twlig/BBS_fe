@@ -4,9 +4,9 @@
       <div class="header">
         <h1>{{Title}}</h1>
         <div class="title_buttons" v-if="unblank">
-          <button v-if="isAdmin">精华</button>
-          <button v-if="isAdmin">置顶</button>
-          <button v-if="isAdmin||isMine" @click="editPost()">修改</button>
+          <button v-if="isAdmin" @click="setGood()">精华</button>
+          <button v-if="isAdmin" @click="setTop()">置顶</button>
+          <button v-if="isAdmin||isMine" @click="" @click="editPost()">修改</button>
           <button v-if="isAdmin||isMine" @click="deletePost()">删除</button>
           <button @click="letshow()">回复</button>
           <button @click="re()">返回</button>
@@ -58,7 +58,7 @@
       </div>
 
       <div class="pagination_wrapper">
-        <p style="text-align:left;margin:0 0 0px 500px">
+        <p style="text-align:left;margin-left: 20px">
           <input class="btn btn1" @click="Pre()" type="submit" name="FaTie7" id="FaTie7" value="上一页">
           <span v-for="(index) in goodTieGroup">
             <span @click="toIndex(index)" v-if="goodTieGroup > 8"><a :class="[goodNowIndex == index ? 'current' : '']" v-if="index < 5 || index > (goodTieGroup - 4)">{{index}}&nbsp;</a><a v-if="index === goodTieGroup - 5">...</a></span>
@@ -148,7 +148,7 @@
           })
       },
       setGood() {
-        this.axios.post(this.baseUrl2 + "doPostEditing?post_id=" + this.$route.query.postId)
+        this.axios.post(this.baseUrl2 + "doPostEditing?post_id=" + this.postId)
           .then(res => {
             if(res.data.status == '1') {
               alert("加精成功")
@@ -163,7 +163,7 @@
           alert("置顶帖子不能超过5个")
         }
         else {
-          this.axios.post(this.baseUrl2 + "doPostSticky?post_id=" + this.$route.query.postId)
+          this.axios.post(this.baseUrl2 + "doPostSticky?post_id=" + this.postId)
             .then(res => {
               if(res.data.status == '1') {
                 alert("置顶成功")
@@ -174,32 +174,6 @@
             })
         }
       },
-      // getTie() {
-      //   this.axios.get(this.baseUrl1 + "/api/getReplyInformationByPostID?post_id=" + this.$route.query.postId)
-      //     .then(res => {
-      //       if(res.data.status == '1') {
-      //         this.SjTieAns = res.data.data.replyInformation
-      //         // this.ansNum = this.SjTieAns.length
-      //       }
-      //       else if(res.data.status == '-1') {
-      //         alert("当前帖子回复为空")
-      //       }
-      //       else {
-      //         alert("请求失败")
-      //       }
-      //     })
-      // },
-      // getUpTie() {
-      //   this.axios.get(this.baseUrl1 + "/api/getPostByPostId?post_id=" + this.$route.query.postId)
-      //     .then(res => {
-      //       if(res.data.status == '1') {
-      //         this.upTie = res.data.data
-      //       }
-      //       else {
-      //         alert("数据请求失败")
-      //       }
-      //     })
-      // },
       deletePost(){
         this.axios.get(this.baseUrl1+ "/api/deletePost?post_id="+this.postId)
           .then(res => {
@@ -247,7 +221,7 @@
       },
       //修改帖子
       editPost(){
-        this.$router.push("/postTopic?Id=" + this.postId + "&" + "change=" + 1)
+        this.$router.push("/edit?Id=" + this.postId)
       },
       //判断身份
       getStatus(){
@@ -279,7 +253,9 @@
       getReply() {
         this.axios.get(this.baseUrl1 + "/api/getReplyInformationByPostID?post_id="+this.postId)
           .then(res => {
-            this.AllReply=res.data.data.replyInformation;
+            if (res.data.data != '') {
+              this.AllReply=res.data.data.replyInformation;
+            }
             this.goodTieLength = this.AllReply.length
             if (this.goodTieLength >= 5)
               this.goodTieEnd = 5

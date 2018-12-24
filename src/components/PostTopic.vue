@@ -28,6 +28,7 @@
           <span class="iconFont">返回首页</span>
         </div>
         <button class="btn" @click="postImg()">发表</button>
+        <button class="btn" @click="re()">返回</button>
       </div>
     </div>
     <div class="animated bounceInDown z_mask" v-if="removeTip">
@@ -60,6 +61,9 @@
       }
     },
     methods: {
+      re(){
+        this.$router.go(-1)
+      },
       getCategory() {
         this.axios.get(this.baseUrl1 + "/api/getCategory")
           .then(res => {
@@ -324,6 +328,7 @@
     text-align: center;
     border-radius: 2px;
     float: right;
+    margin-left: 10px;
   }
   .add_comment .btn:hover {
     background-image: linear-gradient(to bottom,#3887fa 0,#3782f0 100%);

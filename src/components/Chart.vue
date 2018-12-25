@@ -126,12 +126,16 @@
       this.getSex()
       this.getAge()
       this.getCategoryId()
+    },
+    created() {
+        let _this = this
+       setInterval(function () {
+         _this.getSex()
+         _this.getPro()
+         _this.getAge()
+         _this.getCategoryId()
+       },7000)
     }
-    //   let _this = this
-    //  setInterval(function () {
-    //    _this.getSex()
-    //  },7000)
-    // }
   }
 </script>
 <style>

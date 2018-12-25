@@ -7,9 +7,9 @@
           <div class="left">
             <img class="leftimg" src="../assets/img/message1.png">
           </div>
-          <div class="right">
-            <img class="rightimg" src="../assets/img/friend.png">
-          </div>
+          <!--<div class="right">-->
+            <!--<img class="rightimg" src="../assets/img/friend.png">-->
+          <!--</div>-->
         </div>
         <div class="allMessage">
           <div v-if="nowTalkUser.account != userAccount" @click="showMessage(nowTalkUser.account,nowTalkUser.user_name)" class="message1">
@@ -83,6 +83,7 @@
               this.nowTalkUser = res.data.data
               this.nowTalkUser.account = this.$route.query.account
               this.getUser()
+              alert("请选择聊天对象")
             } 
             else {
               alert("获取信息失败")
@@ -105,6 +106,7 @@
       showMessage(account,name) {
         this.talkUser = name
         this.talkAccount = account
+        this.talkMessage = []
         let _this = this
         this.axios.get(_this.baseUrl1 + "/api/showConversation?account_1="+ _this.userAccount + "&account_2=" + account)
           .then(res => {
@@ -118,12 +120,12 @@
         if(this.contentMessage != '') {
           this.axios.get(this.baseUrl1 + "/api/sendMessage?account_send=" + this.userAccount + "&account_receive=" + this.talkAccount +"&message_content=" + this.contentMessage)
             .then(res => {
-              if(res.data.status != '1') {
-                alert("发送信息失败")
-              }
-              else {
+              if(res.data.status == '1') {
                 this.contentMessage = ''
                 this.showMessage(this.talkAccount,this.talkUser)
+              }
+              else {
+                alert("发送信息失败")
               }
             })
         }
@@ -178,13 +180,14 @@
   .title2 {
     height: 40px;
     background-color: rgba(63,137,236,0.06);
+    border-bottom: 2px rgb(63,137,236) solid;
   }
   .title2 .left {
-    width: 50%;
+    width: 100%;
     height: 100%;
     position: absolute;
     left: 0;
-    border-bottom: 2px rgb(63,137,236) solid;
+    /*border-bottom: 2px rgb(63,137,236) solid;*/
   }
   .title2 .right {
     width: 50%;

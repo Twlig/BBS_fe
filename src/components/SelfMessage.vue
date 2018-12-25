@@ -11,7 +11,6 @@
         </div>
       </div>
       <div class="bbs_content">
-
         <div class="all_bbs_message">
           <div class="bbs_message">
             <div class="bbs_message_top">

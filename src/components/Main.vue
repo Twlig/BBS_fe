@@ -6,7 +6,10 @@
       <!--<div class="w3"></div>-->
       <!--<div class="w4"></div>-->
     <!--</div>-->
-    <img id="apDiv6" src="../assets/img/pencil.png" width="50px" height="50px" alt="发帖" longdesc="#" @click="toPostTopic()">
+    <div class="apDiv6">
+      <img src="../assets/img/pencil.png" width="50px" height="50px" alt="发帖" longdesc="#" @click="toPostTopic()">
+    </div>
+    <div class="apDiv7">发帖</div>
     <div>
     <div class="container">
       <div class="header"><a href="#"> <img src="../assets/img/BBS.png"name="Insert_logo" width="125" height="84" id="Insert_logo" style="display:block;" /></a>
@@ -20,16 +23,16 @@
       <div class="content">
         <div>
           <p v-for="item in topTie"><button class="bt1">置顶</button><a @click="toTieDetail(item.post_id)" class="TieZiZT">{{item.post_title}}</a>
-            <img class="tieIcon" src="../assets/img/top1.png" @click="moveUpPost(item.post_id)">
-            <img class="tieIcon" src="../assets/img/down.png" @click="moveDownPost(item.post_id)">
-            <img class="tieIcon" src="../assets/img/undo.png" @click="cancelSticky(item.post_id)">
+            <img v-if="type == '1'" class="tieIcon" src="../assets/img/top1.png" @click="moveUpPost(item.post_id)">
+            <img v-if="type == '1'" class="tieIcon" src="../assets/img/down.png" @click="moveDownPost(item.post_id)">
+            <img v-if="type == '1'" class="tieIcon" src="../assets/img/undo.png" @click="cancelSticky(item.post_id)">
           </p>
         </div>
         <!--加精贴-->
         <div v-if="goodTieLength > 0">
           <hr align="center" size="10" >
           <p v-for="item in nowGoodTie"><button class="bt2">精</button><a @click="toTieDetail(item.post_id)" class="TieZiZT">{{item.post_title}}</a>
-            <img class="tieIcon" src="../assets/img/undo.png" @click="cancelEditing(item.post_id)"/>
+            <img v-if="type == '1'" class="tieIcon" src="../assets/img/undo.png" @click="cancelEditing(item.post_id)"/>
           </p>
           <p style="text-align:left;">
             <input @click="goodPre()" type="submit" name="FaTie7" id="FaTie7" value="上一页">
@@ -99,7 +102,7 @@
     </div>
     <div v-if="showModal" id="modal">
     </div>
-      <div v-if="isLoginT" id="login" class="login1 animated bounceInDown">
+      <div style="z-index: 10" v-if="isLoginT" id="login" class="login1 animated bounceInDown">
         <img class="close1" src="../assets/img/close.png" @click="close()">
         <div style="clear: both;"></div>
         <div class="title">登录</div>
@@ -114,13 +117,13 @@
         <button class="submit" @click="login()">登录</button>
         <div class="register" @click="toregister()">没账号，现在去注册</div>
       </div>
-    <div v-if="isRegister" class="animated bounceInUp" id="register">
+    <div style="z-index: 5;" v-if="isRegister" class="animated bounceInUp" id="register">
       <img class="close1" src="../assets/img/close.png" @click="close()">
       <div style="clear: both;"></div>
       <div class="title">注册</div>
       <div class="input_div">
         <img src="../assets/img/user.png">
-        <input placeholder="账户：只能数字组合" id="user1" v-model="account"/>
+        <input placeholder="账户：数字和字母组合" id="user1" v-model="account"/>
       </div>
       <div class="input_div">
         <img src="../assets/img/password.png">
@@ -132,7 +135,7 @@
       </div>
       <div class="input_div">
         <img src="../assets/img/true.png">
-        <input placeholder="用户名" id="true_name" v-model="username"/>
+        <input placeholder="昵称" id="true_name" v-model="username"/>
       </div>
       <div class="input_div">
         <img src="../assets/img/phone.png">
@@ -144,7 +147,11 @@
       </div>
       <div class="input_div">
         <img src="../assets/img/sex.png">
-        <input placeholder="性别" id="sex" v-model="sex"/>
+        <select id="sex" v-model="sex" style="width: 60%;height:100%;line-height:30px;border: 0;margin-left: 50px;font-size:10px;outline: none;float: right">
+          <option value ="">请选择性别</option>
+          <option value ="男">男 </option>
+          <option value ="女">女 </option>
+        </select>
       </div>
       <div class="input_div">
         <img src="../assets/img/work.png">
@@ -152,7 +159,44 @@
       </div>
       <div class="input_div">
         <img src="../assets/img/workplace.png">
-        <input placeholder="工作地点" id="workplace" v-model="place"/>
+        <select id="workplace" v-model="place" style="width:60%;height:100%;line-height:30px;border: 0;margin-left: 50px;font-size:10px;outline: none;float: right ">
+          <option value ="">请选择省份</option>
+          <option value ="北京市">
+            北京 </option><option value ="天津">
+          天津 </option><option value ="上海">
+          上海 </option><option value ="重庆">
+          重庆 </option><option value ="河北">
+          河北 </option><option value ="山西">
+          山西 </option><option value ="辽宁">
+          辽宁 </option><option value ="吉林">
+          吉林 </option><option value ="黑龙江">
+          黑龙江</option><option value ="江苏">
+          江苏 </option><option value ="浙江">
+          浙江 </option><option value ="安徽">
+          安徽 </option><option value ="福建">
+          福建 </option><option value ="江西">
+          江西 </option><option value ="山东">
+          山东 </option><option value ="河南">
+          河南 </option><option value ="湖北">
+          湖北 </option><option value ="湖南">
+          湖南 </option><option value ="广东">
+          广东 </option><option value ="海南">
+          海南 </option><option value ="四川">
+          四川 </option><option value ="贵州">
+          贵州 </option><option value ="云南">
+          云南 </option><option value ="陕西">
+          陕西 </option><option value ="甘肃">
+          甘肃 </option><option value ="青海">
+          青海 </option><option value ="台湾">
+          台湾 </option><option value ="广西">
+          广西</option><option value ="内蒙古">
+          内蒙古</option><option value ="西藏">
+          西藏</option><option value ="宁夏">
+          宁夏 </option><option value ="新疆">
+          新疆</option><option value ="香港">
+          香港</option><option value ="澳门">
+          澳门</option>
+        </select>
       </div>
       <button @click="register()" class="submit">注册</button>
     </div>
@@ -222,7 +266,8 @@ export default {
       hrefIndex: null,
       topTie: [],
       hotTie: [],
-      categoryId: ''
+      categoryId: '',
+      type: '0'
     }
   },
   methods: {
@@ -260,11 +305,17 @@ export default {
       this.isRegister = false
     },
     register() {
+      let _this = this
       if(this.username == '' || this.account == '' || this.password == '' || this.age == '' || this.occupation == '' || this.place == '' || this.sex == '' || this.tel == '' || this.passwordAgain == '') {
-        alert("请完成所有信息")
+        this.message = "请完成所有信息"
+        this.isAlert = true
+        setTimeout(function () {
+          _this.isAlert = false
+        },1500)
       }
       else {
         if(this.sex == '男' || this.sex == '女') {
+          let _this = this
           if(this.password === this.passwordAgain) {
             let data = {
               account: this.account,
@@ -281,21 +332,37 @@ export default {
                 if (res.data.status == '0') {
                   this.username = this.account = this.password = this.age = this.occupation = this.place = this.sex = this.tel = this.passwordAgain = ''
                   this.isRegister = false
-                  this.showModal = false
-                  this.isLoginT = false
-                  alert("注册成功")
+                  this.isLoginT = true
+                  this.message = "注册成功"
+                  this.isAlert = true
+                  setTimeout(function () {
+                    _this.isAlert = false
+                  },1500)
                 }
                 else {
-                  alert(res.data.message)
+                  this.message = res.data.message
+                  this.isAlert = true
+                  setTimeout(function () {
+                    _this.isAlert = false
+                  },1500)
                 }
               })
           }
           else {
-            alert("输入密码不一致")
+            this.message = "输入密码不一致"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
         }
         else {
-          alert("性别类型不对")
+          let _this = this
+          this.message = "性别类型不对"
+          this.isAlert = true
+          setTimeout(function () {
+            _this.isAlert = false
+          },1500)
         }
       }
     },
@@ -328,6 +395,7 @@ export default {
               this.showModal = false
               localStorage.setItem("account",_this.accountLogin)
               localStorage.setItem("type",res.data.data.type)
+              this.type = res.data.data.type
               this.accountLogin = this.passwordLogin = ''
             }
           })
@@ -355,17 +423,23 @@ export default {
       this.toGetGoodTie()
     },
     toGetHotTie() {
+      let _this = this
       this.axios.get(this.baseUrl1 + "/api/getPostStatisticsByReplyNum")
         .then(res => {
           if (res.data.status == '1') {
             this.hotTie = res.data.data
           }
           else {
-            alert("请求热帖失败")
+            this.message = "请求热帖失败"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
         })
     },
     toGetUsualTie() {
+      let _this = this
       this.axios.get(this.baseUrl2 + "getPost?category_id=" + this.categoryId)
         .then(res => {
           if (res.data.status == '1') {
@@ -384,14 +458,25 @@ export default {
             }
           }
           else if (res.data.status == '2') {
-            alert("贴子为空")
+            this.usualTie = []
+            this.usualTieLength = 0
+            this.message = "普通帖子为空"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
           else {
-            alert("请求失败")
+            this.message = "请求普通帖子失败"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
         })
     },
     toGetScoreTie() {
+      let _this = this
       this.axios.get(this.baseUrl + "/api/getScoreTie")
         .then(res => {
           if (res.data.status == '0') {
@@ -410,11 +495,16 @@ export default {
             }
           }
           else {
-            alert("请求失败")
+            this.message = "请求赏金帖失败"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
         })
     },
     toGetGoodTie() {
+      let _this = this
       this.axios.get(this.baseUrl2 + "getEditingPost?category_id=" + this.categoryId)
         .then(res => {
           if(res.data.status == '1') {
@@ -433,29 +523,49 @@ export default {
             }
           }
           else if(res.data.status == '2') {
-            alert("帖子为空")
+            this.goodTie = []
+            this.goodTieLength = 0
+            this.message = "精品贴为空"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
           else {
-            alert("获取加精信息失败")
+            this.message = "获取加精贴信息失败"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
         })
     },
     toGetTopTie() {
+      let _this = this
       this.axios.get(this.baseUrl2 + "getStickyPost")
         .then(res => {
           if(res.data.status == '1') {
             this.topTie = res.data.data.posts
           }
           else {
-            alert("置顶帖子获取失败")
+            this.message = "置顶帖子获取失败"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
         })
     },
     moveUpPost(postId) {
+      let _this = this
       this.axios.get(this.baseUrl2 + "moveUpPost?post_id=" + postId)
         .then(res => {
           if(res.data.status != '1') {
-            alert("上移失败")
+            this.message = "上移失败"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
           else {
             this.toGetTopTie()
@@ -463,10 +573,15 @@ export default {
         })
     },
     moveDownPost(postId) {
+      let _this = this
       this.axios.get(this.baseUrl2 + "moveDownPost?post_id=" + postId)
         .then(res => {
           if(res.data.status != '1') {
-            alert("下移失败")
+            this.message = "下移失败"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
           else {
             this.toGetTopTie()
@@ -474,10 +589,15 @@ export default {
         })
     },
     cancelSticky(postId) {
+      let _this = this
       this.axios.get(this.baseUrl2 + "cancelSticky?post_id=" + postId)
         .then(res => {
           if(res.data.status != '1') {
-            alert("取消置顶失败")
+            this.message = "取消置顶失败"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
           else {
             this.toGetTopTie()
@@ -485,10 +605,15 @@ export default {
         })
     },
     cancelEditing(postId) {
+      let _this = this
       this.axios.get(this.baseUrl2 + "cancelEditing?post_id=" + postId)
         .then(res => {
           if(res.data.status != '1') {
-            alert("取消加精失败")
+            this.message = "取消加精失败"
+            this.isAlert = true
+            setTimeout(function () {
+              _this.isAlert = false
+            },1500)
           }
           else {
             this.toGetGoodTie()
@@ -685,7 +810,7 @@ export default {
     box-sizing: border-box;
     padding-left: 10px;
     padding-top: 10px;
-    background-color: rgba(255,137,107,0.1);
+    background-color: rgba(63,137,237,0.1);
   }
   .hotTie .title {
     width: 100%;
@@ -722,34 +847,34 @@ export default {
     border: 1px #666 solid;
     outline: none;
   }
-  .animate1 {
-    /*z-index: -1;*/
-    position: fixed;
-    left: 0;
-    top: 0;
-  }
-  .animate1 .w2{
-    -webkit-animation-delay:1s;
-  }
-  .animate1 .w3{
-    -webkit-animation-delay:2s;
-  }
-  .animate1 .w4{
-    -webkit-animation-delay:3s;
-  }
-  .wave{
-    width: 500px;
-    height: 500px;
-    position: absolute;
-    top: 10px;
-    left: 20px;
-  }
-  .wave *{
-    border:1px solid #fff;
-    position:absolute;
-    border-radius:50%;
-    -webkit-animation:opac 4s infinite;
-  }
+  /*.animate1 {*/
+    /*!*z-index: -1;*!*/
+    /*position: fixed;*/
+    /*left: 0;*/
+    /*top: 0;*/
+  /*}*/
+  /*.animate1 .w2{*/
+    /*-webkit-animation-delay:1s;*/
+  /*}*/
+  /*.animate1 .w3{*/
+    /*-webkit-animation-delay:2s;*/
+  /*}*/
+  /*.animate1 .w4{*/
+    /*-webkit-animation-delay:3s;*/
+  /*}*/
+  /*.wave{*/
+    /*width: 500px;*/
+    /*height: 500px;*/
+    /*position: absolute;*/
+    /*top: 10px;*/
+    /*left: 20px;*/
+  /*}*/
+  /*.wave *{*/
+    /*border:1px solid #fff;*/
+    /*position:absolute;*/
+    /*border-radius:50%;*/
+    /*-webkit-animation:opac 4s infinite;*/
+  /*}*/
   .tieIcon {
     width: 20px;
     height: 20px;
@@ -860,18 +985,27 @@ export default {
     background-color: rgba(63,137,236,0.4);
   }
 
-  .footer {
-    padding: 10px 0;
-    background-color: rgba(63,137,236,0.1);
-    position: relative;
-    clear: both;
-  }
-
-  #apDiv6 {
+  .apDiv6,
+  .apDiv7{
     position: fixed;
     right: 25%;
     bottom: 30px;
     cursor: pointer;
+    background-color: #fff;
+    z-index: 2;
+    opacity: 1;
+  }
+  .apDiv7 {
+    z-index: 1;
+    background-color: rgb(63,137,237);
+    size: 16px;
+    color: #fff;
+    line-height: 50px;
+    width: 50px;
+    text-align: center;
+  }
+  .apDiv6:hover {
+    opacity: 0;
   }
   .ZiTi {
     font-size: 15px;
@@ -954,6 +1088,7 @@ export default {
     background-color: rgba(0,0,0,0.3);
     width: 100%;
     height: 100%;
+    z-index: 3;
   }
   .login1 {
     width: 400px;
@@ -962,6 +1097,7 @@ export default {
     background-color: #fff;
     box-shadow: rgba(0,0,0,0.4) 0px 10px 20px;
     border: rgba(63,137,236,0.7) 5px solid;
+    z-index: 5;
   }
   .close1 {
     width: 25px;

@@ -28,6 +28,7 @@
         </div>
       </div>
       <!--//后面的楼-->
+      <div v-if="isLoad">
       <div class="content" v-for="(item,indexs) in nowGoodTie">
         <div class="content_left" v-for="(item3,index) in item" v-if="index == 0">
           <div class="content_avatar_wrapper">
@@ -68,7 +69,10 @@
           <input class="btn btn1" @click="Next()" type="submit" name="FaTie10" id="FaTie10" value="下一页">
         </p>
       </div>
-
+      </div>
+      <div v-if="!isLoad">
+        <alert :message="message" class="animated bounceInDown aletr"></alert>
+      </div>
       <div v-if="show" class="comment animated bounceInDown" id="login">
         <img class="close1" src="../assets/img/close.png" @click="close()">
         <div style="clear: both;"></div>
@@ -88,6 +92,7 @@
   </div>
 </template>
 <script>
+  import Alert from './Alert'
   export default {
     data() {
       return {
@@ -129,8 +134,13 @@
         //回复主贴id
         replyIdOther: '0',
         show:false,
-        img:''
+        img:'',
+        message: "正在加载中",
+        isLoad: false
       }
+    },
+    components: {
+      Alert
     },
     methods: {
       getType() {
@@ -204,17 +214,14 @@
         this.replyIdOther = ownId
       },
       submitAns() {
-        this.account='111'
+        this.account = localStorage.getItem("account")
         this.axios.get(this.baseUrl1 + "/api/replyAndSave?post_id=" + this.postId + "&account=" + this.account + "&reply_content=" + this.ansContent+ "&reply_id=" + this.replyIdOther +"&image=")
           .then(res => {
-            console.log(2)
             if(res.data.status != '1') {
-              console.log(3)
               alert("回复失败")
             }
             this.show = false
             this.replyIdOther = 0
-            console.log(4)
           })
         this.getTitle()
         this.getReply()
@@ -256,6 +263,7 @@
             if (res.data.data != '') {
               this.AllReply=res.data.data.replyInformation;
             }
+            this.isLoad = true
             this.goodTieLength = this.AllReply.length
             if (this.goodTieLength >= 5)
               this.goodTieEnd = 5
@@ -325,6 +333,9 @@
 <style scoped>
   a {
     cursor: pointer;
+  }
+  .current {
+    color: red !important;
   }
   .special{
     color: gold;

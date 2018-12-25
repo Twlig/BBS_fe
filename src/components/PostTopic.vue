@@ -28,7 +28,7 @@
           <span class="iconFont">返回首页</span>
         </div>
         <button class="btn" @click="postImg()">发表</button>
-        <button class="btn" @click="re()">返回</button>
+        <!--<button class="btn" @click="re()">返回</button>-->
       </div>
     </div>
     <div class="animated bounceInDown z_mask" v-if="removeTip">
@@ -90,7 +90,7 @@
             })
         }
         else {
-          this.postImg()
+          this.postTopic()
         }
       },
       postTopic() {
@@ -112,6 +112,7 @@
               .then(res => {
                 if(res.data.status == '0') {
                   alert("发帖成功")
+                  this.$router.push("/")
                 }
                 else {
                   alert("发帖失败")
@@ -128,6 +129,7 @@
             _this.axios.get(_this.baseUrl1 + "/api/sendPost?post_title=" + _this.postTitle + "&post_content=" + _this.postContent + "&category_id=" + _this.categorySelected + "&account=" + localStorage.getItem("account") +"&image=" + _this.imgUrl)
               .then(res => {
                 if(res.data.status == '1') {
+                  this.$router.push("/")
                   alert("发帖成功")
                 }
                 else {

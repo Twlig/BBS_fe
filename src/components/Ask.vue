@@ -2,11 +2,13 @@
   <div class="container-fluid">
     <div class="col-md-6 col-lg-6 col-xs-12 col-md-offset-3 col-lg-offset-3">
       <h1 class="title"><i class="fa fa-exclamation-circle"></i>&nbsp;{{scoreTie.post_title}}</h1>
+      <img @click="re()" style="width: 20px;height: 20px;float: right;margin-top: 20px;cursor: pointer" src="../assets/img/back1.png">
       <div class="status">
         <span @click="toSpace(scoreTie.account)" class="username">{{scoreTie.username}}</span>
         <span class="time">{{scoreTie.post_time}}</span>
       </div>
       <div>{{scoreTie.post_content}}</div>
+      <img width="400px" :src="scoreTie.image">
       <div class="message">您的回答被采纳后将获得：系统奖励 <span class="bonus"><i class="fa fa-database"></i>{{scoreTie.post_score}}</span>（财富值+成长值）</div>
       <div class="answer_wrapper">
         <div class="head"><i class="fa fa-arrows-alt"></i></div>
@@ -30,7 +32,7 @@
             <div class="content">{{item1.reply_content}}</div>
             <div class="actions">
               <span @click="ansOtherUp(index)" class="comment_button"><i class="fa fa-commenting-o"></i>评论</span>
-              <button v-if="account == scoreTie.account" class="admit_btn" @click="adopt(index)">采纳</button>
+              <button v-if="account == scoreTie.account && scoreTie.is_finish == 0" class="admit_btn" @click="adopt(index)">采纳</button>
             </div>
           </div>
           <div class="content_comment_wrapper" v-if="item1.reply_id != '0'">
@@ -70,6 +72,9 @@
       }
     },
     methods: {
+      re() {
+        this.$router.go(-1)
+      },
       getScoreTie() {
         this.account = localStorage.getItem("account")
         this.axios.get(this.baseUrl + "/api/getScoreTie?id=" + this.$route.query.postId)
@@ -118,12 +123,14 @@
       submitAns() {
         this.axios.get(this.baseUrl1 + "/api/replyAndSave?post_id=" + this.$route.query.postId + "&account=" + this.account + "&reply_content=" + this.postContent + "&reply_id=" + this.replyIdOther +"&image=")
           .then(res => {
-            if(res.data.status != '1') {
-              alert("回复失败")
+            if(res.data.status == '1') {
+             this.replyIdOther = '0'
+              alert("回复成功")
             }
             else {
-              this.replyIdOther = '0'
+              alert("回复失败，请重新点击评论")
             }
+            this.replyIdOther = '0'
           })
         this.getTie()
       },
@@ -141,8 +148,11 @@
         console.log(data)
         this.axios.post(this.baseUrl + "/api/adoptReply",data)
           .then(res => {
-            if(res.data.status != '0') {
-              alert("操作失败")
+            if(res.data.status == '0') {
+               alert("采纳成功")
+            }
+            else {
+              alert("采纳失败")
             }
           })
       },
@@ -174,6 +184,7 @@
     font-size: 18px;
     color: #4a4d4d;
     font-weight: normal;
+    display: inline-block;
   }
   .title .fa {
     color: rgb(63,137,236);

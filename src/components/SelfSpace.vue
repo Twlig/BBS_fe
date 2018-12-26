@@ -2,7 +2,7 @@
   <div>
     <div class="content">
       <div class="title">
-        <img src="../assets/img/1.jpg">
+        <img src="../assets/img/toux.png">
         <div class="title_contain">
           <div class="title_contain_top">
             <span class="title_contain_follow"><i class="fa fa-database"></i>&nbsp{{score}}</span>
@@ -42,8 +42,8 @@
     data() {
       return {
         havenoPost:false,
-        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
-        baseUrl1: "http://119.29.150.121:8080/BBS",
+        baseUrl: "http://119.29.150.121:8080/BBS_F",
+        baseUrl1: "http://119.29.150.121:8080/BBS_C/",
         //帖子信息
         post: [],
         //当前页面的用户id

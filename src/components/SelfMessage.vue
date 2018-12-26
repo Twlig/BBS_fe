@@ -2,7 +2,7 @@
   <div>
     <div class="content">
       <div class="title">
-        <img src="../assets/img/1.jpg">
+        <img src="../assets/img/toux.png">
         <div class="title_contain">
           <div class="title_contain_top">
             <span class="title_contain_follow" @click="re()">&nbsp返回</span>
@@ -66,7 +66,7 @@
   export default {
     data() {
       return {
-        baseUrl1: "http://119.29.150.121:8080/BBS",
+        baseUrl1: "http://119.29.150.121:8080/BBS_C/",
         message: '',
 
       }

@@ -60,7 +60,7 @@
         chartSettings1: {type: this.typeArr1[this.index1]},
         chartSettings2: {type: this.typeArr2[this.index2]},
         chartSettings3: {type: this.typeArr3[this.index3]},
-        baseUrl1: "http://119.29.150.121:8080/BBS"
+        baseUrl1: "http://119.29.150.121:8080/BBS_C/"
       }
     },
     methods: {

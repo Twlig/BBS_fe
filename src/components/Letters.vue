@@ -13,11 +13,11 @@
         </div>
         <div class="allMessage">
           <div v-if="nowTalkUser.account != userAccount" @click="showMessage(nowTalkUser.account,nowTalkUser.user_name)" class="message1">
-            <img src="../assets/img/1.jpg">
+            <img src="../assets/img/toux.png">
             <span class="name">{{nowTalkUser.user_name}}</span>
           </div>
           <div @click="showMessage(item.account,item.user_name)" class="message1" v-for="item in users">
-            <img src="../assets/img/1.jpg">
+            <img src="../assets/img/toux.png">
             <span class="name">{{item.user_name}}</span>
           </div>
         </div>
@@ -33,14 +33,14 @@
               <div v-for="item in talkMessage">
                 <div v-if="item.account_send == talkAccount" class="other">
                   <div class="avatar_wrapper">
-                    <img @click="toSpace(talkAccount)" src="../assets/img/1.jpg">
+                    <img @click="toSpace(talkAccount)" src="../assets/img/toux.png">
                   </div>
                   <div class="content_container">{{item.message_content}}</div>
                 </div>
                 <div v-if="item.account_send == userAccount" class="me">
                   <div class="content_container">{{item.message_content}}</div>
                   <div class="avatar_wrapper">
-                    <img @click="toSpace(userAccount)" src="../assets/img/2.jpg">
+                    <img @click="toSpace(userAccount)" src="../assets/img/toux.png">
                   </div>
                 </div>
               </div>
@@ -58,7 +58,7 @@
   export default {
     data() {
       return {
-        baseUrl1: "http://119.29.150.121:8080/BBS",
+        baseUrl1: "http://119.29.150.121:8080/BBS_C/",
         users: [],
         userAccount: '',
         isUser: false,
@@ -83,7 +83,6 @@
               this.nowTalkUser = res.data.data
               this.nowTalkUser.account = this.$route.query.account
               this.getUser()
-              alert("请选择聊天对象")
             } 
             else {
               alert("获取信息失败")
@@ -118,16 +117,21 @@
       },
       sendMessage() {
         if(this.contentMessage != '') {
-          this.axios.get(this.baseUrl1 + "/api/sendMessage?account_send=" + this.userAccount + "&account_receive=" + this.talkAccount +"&message_content=" + this.contentMessage)
-            .then(res => {
-              if(res.data.status == '1') {
-                this.contentMessage = ''
-                this.showMessage(this.talkAccount,this.talkUser)
-              }
-              else {
-                alert("发送信息失败")
-              }
-            })
+          if(this.talkAccount == '') {
+            alert("请在左侧列表中选择聊天对象")
+          }
+          else {
+            this.axios.get(this.baseUrl1 + "/api/sendMessage?account_send=" + this.userAccount + "&account_receive=" + this.talkAccount +"&message_content=" + this.contentMessage)
+              .then(res => {
+                if(res.data.status == '1') {
+                  this.contentMessage = ''
+                  this.showMessage(this.talkAccount,this.talkUser)
+                }
+                else {
+                  alert("发送信息失败")
+                }
+              })
+          }
         }
         else {
           alert("发送信息不能为空")

@@ -11,14 +11,14 @@
         </div>
         <div class="input_wrapper">
           <div class="input_header">
-            <a href="#"><i class="fa fa-photo"></i>&nbsp图片<input v-on:change="showImg()" id="img" type="file" style="opacity:0;display: inline-block;width: 20px;position: relative;margin-left: -30px;"></a>
+            <a href="#"><i class="fa fa-photo"></i>&nbsp图片<input v-if="isShow" v-on:change="showImg()" id="img" type="file" style="opacity:0;display: inline-block;width: 20px;position: relative;margin-left: -30px;"></a>
             <span v-if="isNeed">
               <a href="#">&nbsp&nbsp&nbsp悬赏积分&nbsp</a><input type="text" id="num" v-model="score">
               <span class="bonus"><i class="fa fa-database"></i></span>
             </span>
           </div>
           <div class="allMessage">
-            <textarea class="input_field" rows="4" maxlength="100" placeholder="内容最多不能超过100字" v-model="postContent">
+            <textarea class="input_field" rows="4" maxlength="100" placeholder="内容最多不能超过100字,图片只能上传一张，且不可修改" v-model="postContent">
           </textarea>
             <div id="addImg" style="width: 100px;height: auto"></div>
           </div>
@@ -49,15 +49,17 @@
       return {
         category: [],
         categorySelected: '',
-        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
-        baseUrl1: "http://119.29.150.121:8080/BBS",
+        baseUrl: "http://119.29.150.121:8080/BBS_F",
+        baseUrl1: "http://119.29.150.121:8080/BBS_C/",
         baseUrl2: "http://120.79.211.126:8089",
         postTitle: '',
         postContent: '',
         imgUrl: null,
         removeTip:false,
         isNeed: false,
-        score: ''
+        score: '',
+        isShow: true,
+        fileImgA: ''
       }
     },
     methods: {
@@ -76,9 +78,10 @@
           })
       },
       postImg() {
-        let fileImgA = document.getElementById("img").files
-        if(fileImgA.length > 0) {
-          let fileImg = document.getElementById("img").files[0]
+        // let fileImgA = document.getElementById("img").files
+        // console.log(this.fileImgA)
+        if(this.fileImgA.length > 0) {
+          let fileImg = this.fileImgA[0]
           let formData = new FormData()
           formData.append("img",fileImg)
           this.axios.post(this.baseUrl2 + "/api/uploadImage",formData)
@@ -110,9 +113,13 @@
             }
             _this.axios.post(_this.baseUrl + "/api/publishTie", data)
               .then(res => {
-                if(res.data.status == '0') {
+                if(res.data.status == '1') {
                   alert("发帖成功")
                   this.$router.push("/")
+                  this.postContent = ''
+                }
+                else if(res.data.status == '-1'){
+                  alert("发帖失败,用户积分不足")
                 }
                 else {
                   alert("发帖失败")
@@ -129,8 +136,9 @@
             _this.axios.get(_this.baseUrl1 + "/api/sendPost?post_title=" + _this.postTitle + "&post_content=" + _this.postContent + "&category_id=" + _this.categorySelected + "&account=" + localStorage.getItem("account") +"&image=" + _this.imgUrl)
               .then(res => {
                 if(res.data.status == '1') {
-                  this.$router.push("/")
                   alert("发帖成功")
+                  this.$router.push("/")
+                  this.postContent = ''
                 }
                 else {
                   alert("发帖失败")
@@ -140,6 +148,7 @@
         }
       },
       showImg() {
+        this.fileImgA = document.getElementById("img").files
         var imgContainer = document.getElementById("addImg");
         var file = document.getElementById("img");
         var imgUrl = window.URL.createObjectURL(file.files[0]);
@@ -150,7 +159,11 @@
         imgAdd.setAttribute("id","img-div");
         imgAdd.appendChild(img);
         imgContainer.appendChild(imgAdd);
-        this.removeImg();
+        this.isShow = false
+        // if (!this.isShow) {
+        //   alert("图片不可修改")
+        // }
+        // this.removeImg();
       },
       removeImg() {
         var imgDiv = document.getElementById("img-div");

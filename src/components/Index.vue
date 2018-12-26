@@ -9,20 +9,20 @@
           <button v-if="isAdmin||isMine" @click="" @click="editPost()">修改</button>
           <button v-if="isAdmin||isMine" @click="deletePost()">删除</button>
           <button @click="letshow()">回复</button>
-          <button @click="re()">返回</button>
+          <button @click="re1()">首页</button>
         </div>
       </div>
       <div class="content">
         <div class="content_left">
           <div class="content_avatar_wrapper">
-            <img  @click="getSelfSpace(userId)" src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
+            <img  @click="getSelfSpace(userId)" src="../assets/img/toux.png" width="100%" height="100%">
           </div>
           <span class="content_username" @click="getSelfSpace(userId)">{{User}}</span>
         </div>
         <div class="content_right" >
           <div class="text">
             {{postContent}}
-            <img :src="img" width="350px">
+            <img v-if="img != 'null'" :src="img" width="350px">
           </div>
           <span><p class="special">1楼&nbsp;{{postTime}}</p>  </span>
         </div>
@@ -32,7 +32,7 @@
       <div class="content" v-for="(item,indexs) in nowGoodTie">
         <div class="content_left" v-for="(item3,index) in item" v-if="index == 0">
           <div class="content_avatar_wrapper">
-            <img src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
+            <img src="../assets/img/toux.png" width="100%" height="100%">
           </div>
           <span class="content_username" @click="getSelfSpace(item3.account)">{{item3.user_name_1}}</span>
         </div>
@@ -45,7 +45,7 @@
             <div class="comment_item">
               <div class="comment_content">
                 <div class="content_avatar_wrapper">
-                  <img src="https://api.adorable.io/avatars/285/abott@adorable.png" width="100%" height="100%">
+                  <img src="../assets/img/toux.png" width="100%" height="100%">
                 </div>
                 <div class="content_text_wrapper">
                   <span class="username" @click="getSelfSpace(item2.account)">{{item2.user_name_1}}</span>:
@@ -97,9 +97,9 @@
     data() {
       return {
         type: 0,
-        baseUrl1: "http://119.29.150.121:8080/BBS",
-        baseUrl2: "http://120.79.211.126:8080/test/",
-        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
+        baseUrl1: "http://119.29.150.121:8080/BBS_C",
+        baseUrl2: "http://119.29.150.121:8080/BBS_X/",
+        baseUrl: "http://119.29.150.121:8080/BBS_F",
         topTieLength: 0,
         // SjTieAns: [],
         upTie: '',
@@ -145,6 +145,7 @@
     methods: {
       getType() {
         this.type = localStorage.getItem("type")
+        console.log(this.type)
       },
       toGetTopTie() {
         this.axios.get(this.baseUrl2 + "getStickyPost")
@@ -200,18 +201,31 @@
       re(){
         this.$router.go(-1)
       },
+      re1(){
+        this.$router.push("/")
+      },
       close(){
         this.show=false
       },
       letshow(){
-        this.show=true
+        if(!localStorage.getItem("account")) {
+          alert("请先登录")
+        }
+        else {
+          this.show=true
+        }
       },
       getSelfSpace(id){
         this.$router.push("/SelfSpace?Id=" + id)
       },
       submitOther(ownId){
-        this.show=true
-        this.replyIdOther = ownId
+        if(!localStorage.getItem("account")) {
+          alert("请先登录")
+        }
+        else {
+          this.show=true
+          this.replyIdOther = ownId
+        }
       },
       submitAns() {
         this.account = localStorage.getItem("account")
@@ -225,6 +239,7 @@
           })
         this.getTitle()
         this.getReply()
+        this.ansContent = ''
       },
       //修改帖子
       editPost(){
@@ -253,6 +268,7 @@
               this.User = res.data.data.user_name;
               this.postTime = res.data.data.post_time;
               this.img=res.data.data.image;
+              this.getStatus()
             }
           })
       },
@@ -325,8 +341,8 @@
       this.getType()
       this.toGetTopTie()
       this.getTitle();
+      // this.getStatus();
       this.getReply();
-      this.getStatus();
     }
   }
 </script>

@@ -25,8 +25,8 @@
     name: 'Index',
     data() {
       return {
-        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
-        baseUrl1: "http://119.29.150.121:8080/BBS",
+        baseUrl: "http://119.29.150.121:8080/BBS_F",
+        baseUrl1: "http://119.29.150.121:8080/BBS_C/",
         postId: '',
         postContent:'',
         postTitle:'',

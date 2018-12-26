@@ -76,7 +76,7 @@
       </div>
       <div class="sidebar2">
         <div v-if="isLogin">
-          <a href="#"><img src="../assets/img/head.png"name="User_logo" width="60" height="60" id="User_logo" style="margin:auto; display:block;" /></a>
+          <a href="#"><img src="../assets/img/toux.png"name="User_logo" width="60" height="60" id="User_logo" style="margin:auto; display:block;border-radius: 50%;margin-bottom: 10px" /></a>
           <a @click="toSelfSpace()" style="font-size: 13px"> 个人空间>></a>
           <div style="font-size: 13px;margin-top: 5px" @click="logOut()"><i class="fa fa-sign-out"></i><a>&nbsp;退出登录</a></div>
         </div>
@@ -95,7 +95,8 @@
     </div>
     <div class="hotTie">
       <div class="title">热帖榜</div>
-      <div @click="toTieDetail(item.post_id,item.category_id)" class="hot_item" v-for="item in hotTie">
+      <div v-if="!isShowHotTie" style="width: 100%;line-height: 30px;font-size: 14px;">正在加载中</div>
+      <div v-if="isShowHotTie" @click="toTieDetail(item.post_id,item.category_id)" class="hot_item" v-for="item in hotTie">
         <img src="../assets/img/hot.png">
         <span>{{item.post_title}}&nbsp;&nbsp;{{item.number}}&nbsp;<i class="fa fa-fire"></i></span>
       </div>
@@ -123,7 +124,7 @@
       <div class="title">注册</div>
       <div class="input_div">
         <img src="../assets/img/user.png">
-        <input placeholder="账户：数字和字母组合" id="user1" v-model="account"/>
+        <input placeholder="账户" id="user1" v-model="account"/>
       </div>
       <div class="input_div">
         <img src="../assets/img/password.png">
@@ -217,6 +218,7 @@ export default {
       isLoginT: false,
       isRegister: false,
       isAlert: false,
+      isShowHotTie: false,
       bannerList: [
         {"type":"1","img":"../../static/img/guang1.png","url":""},
         {"type":"1","img":"../../static/img/guang2.png","url":""},
@@ -232,9 +234,9 @@ export default {
       sex: '',
       tel: '',
       passwordAgain: '',
-      baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
-      baseUrl1: "http://119.29.150.121:8080/BBS",
-      baseUrl2: "http://120.79.211.126:8080/test/",
+      baseUrl: "http://119.29.150.121:8080/BBS_F",
+      baseUrl1: "http://119.29.150.121:8080/BBS_C",
+      baseUrl2: "http://119.29.150.121:8080/BBS_X/",
       accountLogin: '',
       passwordLogin: '',
       category: [],
@@ -283,8 +285,12 @@ export default {
           }
         })
     },
+    getType() {
+      this.type = localStorage.getItem("type")
+    },
     logOut() {
       localStorage.removeItem("account")
+      localStorage.removeItem("type")
       this.isLogin = false
     },
     toSelfSpace() {
@@ -304,6 +310,14 @@ export default {
       this.isLoginT = false
       this.isRegister = false
     },
+    phone(tel) {
+      if(!(/^1(3|4|5|7|8)\d{9}$/.test(tel))){
+        return false;
+      }
+      else {
+        return true
+      }
+    },
     register() {
       let _this = this
       if(this.username == '' || this.account == '' || this.password == '' || this.age == '' || this.occupation == '' || this.place == '' || this.sex == '' || this.tel == '' || this.passwordAgain == '') {
@@ -314,8 +328,7 @@ export default {
         },1500)
       }
       else {
-        if(this.sex == '男' || this.sex == '女') {
-          let _this = this
+        if(this.phone(this.tel)) {
           if(this.password === this.passwordAgain) {
             let data = {
               account: this.account,
@@ -357,8 +370,7 @@ export default {
           }
         }
         else {
-          let _this = this
-          this.message = "性别类型不对"
+          this.message = "请输入正确的手机号格式"
           this.isAlert = true
           setTimeout(function () {
             _this.isAlert = false
@@ -428,6 +440,7 @@ export default {
         .then(res => {
           if (res.data.status == '1') {
             this.hotTie = res.data.data
+            this.isShowHotTie = true
           }
           else {
             this.message = "请求热帖失败"
@@ -735,7 +748,7 @@ export default {
         this.scoreNowIndex--
         this.scoreTieStart = this.scoreTieStart - 3
         this.scoreTieEnd = this.scoreTieEnd - 3
-        this.nowScoreTie = this.goodTie.slice(this.scoreTieStart,this.scoreTieEnd)
+        this.nowScoreTie = this.scoreTie.slice(this.scoreTieStart,this.scoreTieEnd)
       }
     },
     scoreNext() {
@@ -758,7 +771,8 @@ export default {
     Alert,
   },
   created() {
-    if(localStorage.getItem("account") != null) {
+    this.getType()
+    if(localStorage.getItem("account")) {
       this.isLogin = true
     }
     this.getCategory()
@@ -767,6 +781,10 @@ export default {
     this.toGetGoodTie()
     this.toGetTopTie()
     this.toGetHotTie()
+    let _this = this
+    setInterval(function () {
+      _this.toGetHotTie()
+    },7000)
   }
 }
 </script>

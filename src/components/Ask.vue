@@ -4,7 +4,7 @@
       <h1 class="title"><i class="fa fa-exclamation-circle"></i>&nbsp;{{scoreTie.post_title}}</h1>
       <img @click="re()" style="width: 20px;height: 20px;float: right;margin-top: 20px;cursor: pointer" src="../assets/img/back1.png">
       <div class="status">
-        <span @click="toSpace(scoreTie.account)" class="username">{{scoreTie.username}}</span>
+        <span style="cursor: pointer" @click="toSpace(scoreTie.account)" class="username">{{scoreTie.username}}</span>
         <span class="time">{{scoreTie.post_time}}</span>
       </div>
       <div>{{scoreTie.post_content}}</div>
@@ -12,10 +12,10 @@
       <div class="message">您的回答被采纳后将获得：系统奖励 <span class="bonus"><i class="fa fa-database"></i>{{scoreTie.post_score}}</span>（财富值+成长值）</div>
       <div class="answer_wrapper">
         <div class="head"><i class="fa fa-arrows-alt"></i></div>
-        <textarea class="field" v-model="postContent"></textarea>
+        <textarea class="field" v-model="postContent" placeholder="请在此处输入回复"></textarea>
       </div>
       <div class="submit_wrapper">
-        <button class="submit" @click="submitAns()">提交回答</button>
+        <button class="submit" @click="submitAns()">回复</button>
         <!--<button v-if="isAnsOther" class="submit" @click="submitAns()">回复</button>-->
       </div>
       <hr>
@@ -25,7 +25,7 @@
           <div v-if="item1.reply_id == '0'">
             <!--<button v-if="item1.account == adoptAccount" class="best_btn">最佳答案</button>-->
             <div class="answer_status">
-              <img @click="toSpace(item1.account)" style="width: 30px;height: 30px;cursor: pointer;" src="../assets/img/1.jpg">
+              <img @click="toSpace(item1.account)" style="width: 30px;height: 30px;cursor: pointer;" src="../assets/img/toux.png">
               <span style="cursor: pointer;margin-left: 10px" @click="toSpace(item1.account)" class="author">{{item1.user_name_1}}</span>
               <span style="margin-left: 10px;" class="time">{{item1.reply_time}}</span>
             </div>
@@ -39,7 +39,7 @@
             <div class="comment_item">
               <div class="comment_content">
                 <div class="content_avatar_wrapper">
-                  <img @click="toSpace(item1.account)" src="https://api.adorable.io/avatars/285/abott@adorable.png" style="width: 100%;height: 100%;cursor: pointer">
+                  <img @click="toSpace(item1.account)" src="../assets/img/toux.png" style="width: 100%;height: 100%;cursor: pointer">
                 </div>
                 <div class="content_text_wrapper">
                   <span style="cursor: pointer" @click="toSpace(item1.account)" class="username">{{item1.user_name_1}}</span>:
@@ -58,8 +58,8 @@
   export default {
     data() {
       return {
-        baseUrl: "http://120.79.211.126:8080/javaweb-bbs",
-        baseUrl1: "http://119.29.150.121:8080/BBS",
+        baseUrl: "http://119.29.150.121:8080/BBS_F",
+        baseUrl1: "http://119.29.150.121:8080/BBS_C",
         scoreTie: '',
         account: '',
         postContent: '',
@@ -117,26 +117,42 @@
           })
       },
       ansOther(ownId) {
-        this.toTop()
-        this.replyIdOther = ownId
+        if(!localStorage.getItem("account")) {
+          alert("请先登录")
+        }
+        else {
+          this.toTop()
+          this.replyIdOther = ownId
+        }
       },
       submitAns() {
-        this.axios.get(this.baseUrl1 + "/api/replyAndSave?post_id=" + this.$route.query.postId + "&account=" + this.account + "&reply_content=" + this.postContent + "&reply_id=" + this.replyIdOther +"&image=")
-          .then(res => {
-            if(res.data.status == '1') {
-             this.replyIdOther = '0'
-              alert("回复成功")
-            }
-            else {
-              alert("回复失败，请重新点击评论")
-            }
-            this.replyIdOther = '0'
-          })
-        this.getTie()
+        if (!localStorage.getItem("account")) {
+          alert("请先登录")
+        }
+        else {
+          this.axios.get(this.baseUrl1 + "/api/replyAndSave?post_id=" + this.$route.query.postId + "&account=" + this.account + "&reply_content=" + this.postContent + "&reply_id=" + this.replyIdOther +"&image=")
+            .then(res => {
+              if(res.data.status == '1') {
+                this.replyIdOther = '0'
+                alert("回复成功")
+              }
+              else {
+                alert("回复失败，请重新点击评论")
+              }
+              this.replyIdOther = '0'
+            })
+          this.getTie()
+        }
+        this.postContent = ''
       },
       ansOtherUp(index) {
-        this.toTop()
-        this.replyIdOther = this.SjTieAns[index][0].own_id
+        if(!localStorage.getItem("account")) {
+          alert("请先登录")
+        }
+        else {
+          this.toTop()
+          this.replyIdOther = this.SjTieAns[index][0].own_id
+        }
       },
       adopt(index) {
         this.adoptAccount = this.SjTieAns[index][0].account
@@ -150,6 +166,7 @@
           .then(res => {
             if(res.data.status == '0') {
                alert("采纳成功")
+              this.getScoreTie()
             }
             else {
               alert("采纳失败")
@@ -335,9 +352,9 @@
 .content_comment_wrapper .comment_item .content_avatar_wrapper {
     width: 32px;
     height: 32px;
-    padding: 4px;
+    /*padding: 4px;*/
     background-color: #fff;
-    border: 1px solid #ccc;
+    /*border: 1px solid #ccc;*/
     margin-right: 10px;
   }
  .content_comment_wrapper .comment_item .content_text_wrapper {

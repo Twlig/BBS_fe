@@ -8,10 +8,11 @@
             <span class="title_contain_follow"><i class="fa fa-database"></i>&nbsp{{score}}</span>
             <span class="title_contain_letter" @click="getLetters()"><i class="fa fa-comments"></i>私信</span>
             <span class="title_contain_selfInfo" @click="getInfo()"><i class="fa fa-id-card"></i>个人资料>></span>
-            <span class="title_contain_last" @click="re()">&nbsp返回</span>
           </div>
           <div class="name">{{name}}</div>
         </div>
+        <span v-if="type == '1'" class="title_contain_right" @click="toView()">&nbsp数据可视化</span>
+        <span class="title_contain_last" @click="re()">&nbsp返回</span>
       </div>
       <div class="bbs_content">
         <div class="bbs_content_title"><img src="../assets/img/tie.png"><span>帖子</span></div>
@@ -27,7 +28,6 @@
               </div>
               <div class="bbs_message_detail">
                 <div class="text" @click="getPost()">{{item.post_content}}</div>
-
               </div>
             </div>
           </li></ul>
@@ -54,9 +54,17 @@
         name:'',
         //访客的id
         mine: localStorage.getItem("account"),
+        type: 0
       }
     },
     methods: {
+      getType() {
+        this.type = localStorage.getItem("type")
+        console.log(this.type)
+      },
+      toView() {
+        this.$router.push('/chart')
+      },
       re(){
         this.$router.go(-1)
       },
@@ -111,6 +119,7 @@
       }
     },
     created() {
+      this.getType()
       this.getId();
       this.getMessage();
       this.getScore();
@@ -201,19 +210,24 @@
     font-size: 13px;
     cursor: pointer;
   }
-  .content .title .title_contain .title_contain_top .title_contain_last {
+  .title_contain_last,
+  .title_contain_right{
     width: 50px;
     line-height: 26px;
     position: absolute;
     margin-right: 5px;
     top: 50%;
     margin-top: -13px;
-    left: 600px;
+    right: 10px;
     background-color: darkgray;
     text-align: center;
     color: #fff;
     font-size: 13px;
     cursor: pointer;
+  }
+  .title_contain_right {
+    width: 120px;
+    right: 70px ;
   }
   .content .title .title_contain .title_contain_top .title_contain_letter {
     width: 50px;

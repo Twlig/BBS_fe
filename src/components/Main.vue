@@ -51,7 +51,7 @@
           <p style="text-align:left;">
             <input @click="scorePre()" type="submit" name="FaTie8" id="FaTie8" value="上一页">
             <span v-for="(index) in scoreTieGroup">
-            <span @click="toScoreIndex(index)" v-if="scoreTieGroup > 8"><a @click="toUsualIndex(index)" :class="[scoreNowIndex == index ? 'current' : '']" v-if="index < 5 || index > (scoreTieGroup - 4)" href="#">{{index}}&nbsp;</a><a v-if="index === scoreTieGroup - 5">...</a></span>
+            <span @click="toScoreIndex(index)" v-if="scoreTieGroup > 8"><a @click="toScoreIndex(index)" :class="[scoreNowIndex == index ? 'current' : '']" v-if="index < 5 || index > (scoreTieGroup - 4)" href="#">{{index}}&nbsp;</a><a v-if="index === scoreTieGroup - 5">...</a></span>
             <a @click="toScoreIndex(index)" :class="[scoreNowIndex == index ? 'current' : '']" href="#" v-if="scoreTieGroup <= 8">{{index}}&nbsp;</a>
             </span>
             <span>跳转到</span><input v-model="scoreHrefIndex" type="text" class="hrefInput" @keyup.enter="toScoreIndex1()"/>页
@@ -292,6 +292,7 @@ export default {
       localStorage.removeItem("account")
       localStorage.removeItem("type")
       this.isLogin = false
+      location.reload()
     },
     toSelfSpace() {
       this.$router.push("/selfSpace?Id=" + localStorage.getItem("account"))
@@ -782,9 +783,9 @@ export default {
     this.toGetTopTie()
     this.toGetHotTie()
     let _this = this
-    setInterval(function () {
-      _this.toGetHotTie()
-    },7000)
+    // setInterval(function () {
+    //   _this.toGetHotTie()
+    // },7000)
   }
 }
 </script>
